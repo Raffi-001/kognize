@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Invitation;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Event;
@@ -18,8 +19,48 @@ it('renders registration page', function (): void {
             ->where('passwordRules', Password::defaults()->toPasswordRulesString()));
 });
 
-it('may register a new user', function (): void {
+it('passes the invitation code from the url to the registration page', function (): void {
+    $response = $this->get(route('register', ['invitation' => '12345']));
+
+    $response->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('user/Create')
+            ->where('inviteOnly', true)
+            ->where('invitationCode', '12345'));
+});
+
+it('may register a new user with an invitation', function (): void {
     Event::fake([Registered::class]);
+
+    $invitation = Invitation::factory()->create(['email' => 'test@example.com', 'code' => '12345']);
+
+    $response = $this->fromRoute('register')
+        ->post(route('register.store'), [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password1234',
+            'password_confirmation' => 'password1234',
+            'invitation_code' => '12345',
+        ]);
+
+    $response->assertRedirectToRoute('dashboard');
+
+    $user = User::query()->where('email', 'test@example.com')->first();
+
+    expect($user)->not->toBeNull()
+        ->and($user->name)->toBe('Test User')
+        ->and($user->email)->toBe('test@example.com')
+        ->and(Hash::check('password1234', $user->password))->toBeTrue()
+        ->and($invitation->refresh()->invitee_id)->toBe($user->id)
+        ->and($invitation->used_at)->not->toBeNull();
+
+    $this->assertAuthenticatedAs($user);
+
+    Event::assertDispatched(Registered::class);
+});
+
+it('may register without an invitation when registration is open', function (): void {
+    config(['realcognize.invite_only' => false]);
 
     $response = $this->fromRoute('register')
         ->post(route('register.store'), [
@@ -31,16 +72,52 @@ it('may register a new user', function (): void {
 
     $response->assertRedirectToRoute('dashboard');
 
-    $user = User::query()->where('email', 'test@example.com')->first();
+    expect(User::query()->where('email', 'test@example.com')->exists())->toBeTrue();
+});
 
-    expect($user)->not->toBeNull()
-        ->and($user->name)->toBe('Test User')
-        ->and($user->email)->toBe('test@example.com')
-        ->and(Hash::check('password1234', $user->password))->toBeTrue();
+it('requires an invitation code when registration is invite only', function (): void {
+    $response = $this->fromRoute('register')
+        ->post(route('register.store'), [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password1234',
+            'password_confirmation' => 'password1234',
+        ]);
 
-    $this->assertAuthenticatedAs($user);
+    $response->assertRedirectToRoute('register')
+        ->assertSessionHasErrors('invitation_code');
+});
 
-    Event::assertDispatched(Registered::class);
+it('rejects an unknown or used invitation code', function (string $code): void {
+    Invitation::factory()->used()->create(['email' => 'test@example.com', 'code' => '11111']);
+
+    $response = $this->fromRoute('register')
+        ->post(route('register.store'), [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password1234',
+            'password_confirmation' => 'password1234',
+            'invitation_code' => $code,
+        ]);
+
+    $response->assertRedirectToRoute('register')
+        ->assertSessionHasErrors(['invitation_code' => 'This invitation code is invalid or has already been used.']);
+})->with(['unknown' => '99999', 'used' => '11111']);
+
+it('rejects an invitation code issued for another email', function (): void {
+    Invitation::factory()->create(['email' => 'someone@example.com', 'code' => '12345']);
+
+    $response = $this->fromRoute('register')
+        ->post(route('register.store'), [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password1234',
+            'password_confirmation' => 'password1234',
+            'invitation_code' => '12345',
+        ]);
+
+    $response->assertRedirectToRoute('register')
+        ->assertSessionHasErrors(['invitation_code' => 'This invitation code was issued for a different email address.']);
 });
 
 it('requires name', function (): void {

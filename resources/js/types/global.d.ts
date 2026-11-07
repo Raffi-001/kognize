@@ -1,5 +1,6 @@
 import type { Directive } from 'vue';
 import type { Auth } from '@/types/auth';
+import type { SubmissionStateValue } from '@/types/domain';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -19,6 +20,14 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            openPollsCount: number;
+            openQuestionsCount: number;
+            adminUrl: string | null;
+            recentSubmissions: {
+                id: number;
+                title: string;
+                state: SubmissionStateValue;
+            }[];
             sidebarOpen: boolean;
             [key: string]: unknown;
         };

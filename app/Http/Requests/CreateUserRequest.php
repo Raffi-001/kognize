@@ -6,6 +6,7 @@ namespace App\Http\Requests;
 
 use App\Models\User;
 use App\Rules\ValidEmail;
+use App\Rules\ValidInvitationCode;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -32,6 +33,11 @@ final class CreateUserRequest extends FormRequest
                 'required',
                 'confirmed',
                 Password::defaults(),
+            ],
+            'invitation_code' => [
+                config()->boolean('realcognize.invite_only') ? 'required' : 'nullable',
+                'string',
+                new ValidInvitationCode,
             ],
         ];
     }

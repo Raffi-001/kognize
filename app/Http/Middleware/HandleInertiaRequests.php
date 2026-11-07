@@ -4,7 +4,17 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Enums\PollStatus;
+use App\Enums\QuestionKind;
+use App\Enums\QuestionStatus;
+use App\Enums\SubmissionState;
+use App\Models\AnalysisNote;
+use App\Models\Poll;
+use App\Models\Submission;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Middleware;
 
 final class HandleInertiaRequests extends Middleware
@@ -31,13 +41,70 @@ final class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
+                'usage' => $user instanceof User ? fn (): array => $this->usage($user) : null,
             ],
+            'openPollsCount' => $user instanceof User ? fn (): int => Poll::query()
+                ->where('status', PollStatus::Published)
+                ->whereDoesntHave('votes', fn (Builder $query) => $query->whereBelongsTo($user))
+                ->count() : 0,
+            'openQuestionsCount' => $user instanceof User ? fn (): int => AnalysisNote::query()
+                ->where('question_kind', QuestionKind::Factual)
+                ->where('status', QuestionStatus::Open)
+                ->count() : 0,
+            'adminUrl' => $user instanceof User && $user->is_admin ? url('/admin') : null,
+            'recentSubmissions' => $user instanceof User ? fn (): array => $this->recentSubmissions($user) : [],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+        ];
+    }
+
+    /**
+     * @return array<int, array{id: int, title: string, state: SubmissionState}>
+     */
+    private function recentSubmissions(User $user): array
+    {
+        return $user->submissions()
+            ->latest('id')
+            ->limit(3)
+            ->get(['id', 'title', 'body', 'state'])
+            ->map(fn (Submission $submission): array => [
+                'id' => $submission->id,
+                'title' => $submission->title ?? Str::words(Str::squish($submission->body), 8),
+                'state' => $submission->state,
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function usage(User $user): array
+    {
+        $dailySubmissions = $user->plan->dailySubmissions();
+        $remainingSubmissions = $user->remainingSubmissionsToday();
+        $invitations = $user->plan->invitations();
+        $remainingInvitations = $user->remainingInvitations();
+
+        return [
+            'plan' => $user->plan,
+            'plan_label' => $user->plan->label(),
+            'submissions' => [
+                'limit' => $dailySubmissions,
+                'used' => $dailySubmissions - $remainingSubmissions,
+                'remaining' => $remainingSubmissions,
+            ],
+            'invitations' => [
+                'limit' => $invitations,
+                'used' => $invitations - $remainingInvitations,
+                'remaining' => $remainingInvitations,
+            ],
         ];
     }
 }

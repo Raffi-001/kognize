@@ -24,6 +24,27 @@ pest()->extend(TestCase::class)
 
 expect()->extend('toBeOne', fn () => $this->toBe(1));
 
+/**
+ * Fakes the OpenAI chat completions endpoint so it answers with the given message content.
+ *
+ * @param  array<string, mixed>|string  $content
+ */
+function fakeOpenAi(array|string $content): void
+{
+    config([
+        'services.openai.key' => 'test-key',
+        'services.openai.url' => 'https://api.openai.com/v1',
+    ]);
+
+    Http::fake([
+        'https://api.openai.com/v1/chat/completions' => Http::response([
+            'choices' => [
+                ['message' => ['content' => is_string($content) ? $content : json_encode($content)]],
+            ],
+        ]),
+    ]);
+}
+
 function something(): void
 {
     // ..

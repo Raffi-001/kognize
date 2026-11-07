@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSlot,
+} from '@/components/ui/input-otp';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
@@ -21,9 +27,13 @@ defineOptions({
     ],
 });
 
-defineProps<{
+const props = defineProps<{
     passwordRules: string;
+    inviteOnly: boolean;
+    invitationCode: string;
 }>();
+
+const invitationCode = ref(props.invitationCode);
 </script>
 
 <template>
@@ -36,6 +46,35 @@ defineProps<{
         class="flex flex-col gap-6"
     >
         <div class="grid gap-6">
+            <div v-if="inviteOnly" class="grid gap-2">
+                <Label for="invitation_code">Invitation code</Label>
+                <InputOTP
+                    id="invitation_code"
+                    v-model="invitationCode"
+                    :maxlength="5"
+                    inputmode="numeric"
+                >
+                    <InputOTPGroup>
+                        <InputOTPSlot
+                            v-for="index in 5"
+                            :key="index"
+                            :index="index - 1"
+                            class="size-11 text-base"
+                        />
+                    </InputOTPGroup>
+                </InputOTP>
+                <input
+                    type="hidden"
+                    name="invitation_code"
+                    :value="invitationCode"
+                />
+                <p class="text-xs text-muted-foreground">
+                    Realcognize is invite-only. Use the code from your
+                    invitation email.
+                </p>
+                <InputError :message="errors.invitation_code" />
+            </div>
+
             <div class="grid gap-2">
                 <Label for="name">Name</Label>
                 <Input

@@ -1,3 +1,5 @@
+import type { Usage } from './domain';
+
 export type User = {
     id: string;
     name: string;
@@ -19,6 +21,7 @@ export type Passkey = {
 
 export type Auth = {
     user: User;
+    usage: Usage | null;
 };
 
 export type TwoFactorConfigContent = {

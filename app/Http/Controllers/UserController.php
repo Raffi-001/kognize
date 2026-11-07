@@ -11,6 +11,7 @@ use App\Http\Requests\DeleteUserRequest;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
@@ -18,21 +19,24 @@ use Inertia\Response;
 
 final readonly class UserController
 {
-    public function create(): Response
+    public function create(Request $request): Response
     {
         return Inertia::render('user/Create', [
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
+            'inviteOnly' => config()->boolean('realcognize.invite_only'),
+            'invitationCode' => $request->string('invitation')->value(),
         ]);
     }
 
     public function store(CreateUserRequest $request, CreateUser $action): RedirectResponse
     {
         /** @var array<string, mixed> $attributes */
-        $attributes = $request->safe()->except('password');
+        $attributes = $request->safe()->except(['password', 'invitation_code']);
 
         $user = $action->handle(
             $attributes,
             $request->string('password')->value(),
+            $request->filled('invitation_code') ? $request->string('invitation_code')->value() : null,
         );
 
         Auth::login($user);
