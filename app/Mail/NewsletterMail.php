@@ -21,6 +21,16 @@ final class NewsletterMail extends Mailable implements ShouldQueue
 {
     use Queueable;
 
+    /**
+     * Placeholders that can be used in the subject and intro, replaced for each recipient.
+     *
+     * @var array<string, string>
+     */
+    public const array TOKENS = [
+        'user.name' => 'Full name',
+        'user.first_name' => 'First name',
+    ];
+
     public function __construct(
         public readonly Newsletter $newsletter,
         public readonly User $user,
@@ -29,7 +39,7 @@ final class NewsletterMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->newsletter->subject,
+            subject: $this->personalize($this->newsletter->subject),
         );
     }
 
@@ -53,8 +63,27 @@ final class NewsletterMail extends Mailable implements ShouldQueue
         return new Content(
             markdown: 'mail.newsletter',
             with: [
+                'heading' => $this->personalize($this->newsletter->subject),
+                'intro' => $this->newsletter->intro === null ? null : $this->personalize($this->newsletter->intro),
                 'sections' => array_filter($sections, fn (Collection $links): bool => $links->isNotEmpty()),
             ],
+        );
+    }
+
+    /**
+     * Replace tokens like {{ user.name }} with the recipient's details. Unknown tokens are left as they are.
+     */
+    private function personalize(string $text): string
+    {
+        $values = [
+            'user.name' => $this->user->name,
+            'user.first_name' => Str::before(Str::squish($this->user->name), ' '),
+        ];
+
+        return (string) preg_replace_callback(
+            '/\{\{\s*([a-z_.]+)\s*\}\}/',
+            fn (array $match): string => $values[$match[1]] ?? $match[0],
+            $text,
         );
     }
 

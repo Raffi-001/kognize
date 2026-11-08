@@ -74,6 +74,8 @@ it('offers only analyzed submissions, published polls and open factual questions
 
 it('requires a subject', function (): void {
     livewire(CreateNewsletter::class)
+        ->assertSeeHtml('<code>{{ user.name }}</code> full name')
+        ->assertSeeHtml('<code>{{ user.first_name }}</code> first name')
         ->fillForm(['subject' => null])
         ->call('create')
         ->assertHasFormErrors(['subject' => 'required']);

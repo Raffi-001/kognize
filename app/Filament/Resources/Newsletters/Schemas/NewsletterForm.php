@@ -8,6 +8,7 @@ use App\Enums\PollStatus;
 use App\Enums\QuestionKind;
 use App\Enums\QuestionStatus;
 use App\Enums\SubmissionState;
+use App\Mail\NewsletterMail;
 use App\Models\AnalysisNote;
 use App\Models\Submission;
 use Filament\Forms\Components\Select;
@@ -16,6 +17,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 final class NewsletterForm
@@ -25,9 +27,11 @@ final class NewsletterForm
         return $schema
             ->components([
                 Section::make('Email')
+                    ->description(self::tokensDescription())
                     ->columnSpanFull()
                     ->schema([
                         TextInput::make('subject')
+                            ->placeholder('Բարև {{ user.first_name }}, ...')
                             ->required()
                             ->maxLength(255),
                         Textarea::make('intro')
@@ -75,5 +79,20 @@ final class NewsletterForm
                             ->multiple(),
                     ]),
             ]);
+    }
+
+    /**
+     * Lists the tokens that the subject and intro can use.
+     */
+    private static function tokensDescription(): HtmlString
+    {
+        $tokens = collect(NewsletterMail::TOKENS)
+            ->map(fn (string $label, string $token): string => sprintf('<code>{{ %s }}</code> %s', e($token), e(mb_strtolower($label))))
+            ->implode(', ');
+
+        return new HtmlString(sprintf(
+            'Personalize the subject and intro with %s. Each recipient sees their own; the preview shows yours.',
+            $tokens,
+        ));
     }
 }

@@ -38,3 +38,14 @@ it('leaves out categories with nothing selected', function (): void {
         ->assertDontSeeInHtml('Վերլուծություններ')
         ->assertDontSeeInHtml('Բաց հարցեր');
 });
+
+it('fills in the recipient tokens in the subject and intro', function (): void {
+    $newsletter = Newsletter::factory()->create([
+        'subject' => 'Բարև {{ user.first_name }}',
+        'intro' => 'Dear {{user.name}}, keep {{ user.unknown }}.',
+    ]);
+
+    new NewsletterMail($newsletter, User::factory()->create(['name' => 'Ani Hakobyan']))
+        ->assertHasSubject('Բարև Ani')
+        ->assertSeeInOrderInHtml(['Բարև Ani', 'Dear Ani Hakobyan, keep {{ user.unknown }}.']);
+});

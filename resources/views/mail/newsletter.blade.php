@@ -1,8 +1,8 @@
 <x-mail::message>
-# {{ $newsletter->subject }}
+# {{ $heading }}
 
-@if ($newsletter->intro)
-{{ $newsletter->intro }}
+@if ($intro)
+{{ $intro }}
 
 @endif
 @foreach ($sections as $heading => $links)
