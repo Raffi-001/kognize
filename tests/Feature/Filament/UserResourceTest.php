@@ -8,10 +8,14 @@ use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Resources\Users\Pages\ViewUser;
 use App\Filament\Resources\Users\RelationManagers\RefereesRelationManager;
 use App\Filament\Resources\Users\UserResource;
+use App\Mail\NewsletterMail;
 use App\Models\Invitation;
+use App\Models\Newsletter;
 use App\Models\Submission;
 use App\Models\User;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\Testing\TestAction;
+use Illuminate\Support\Facades\Mail;
 
 use function Pest\Livewire\livewire;
 
@@ -110,4 +114,29 @@ it('deletes a user', function (): void {
         ->callAction(DeleteAction::class);
 
     expect(User::query()->whereKey($member->id)->exists())->toBeFalse();
+});
+
+it('sends a newsletter to the selected users', function (): void {
+    Mail::fake();
+
+    $newsletter = Newsletter::factory()->create(['subject' => 'Weekly']);
+    $users = User::factory()->count(2)->create();
+
+    livewire(ListUsers::class)
+        ->selectTableRecords($users)
+        ->callAction(TestAction::make('sendNewsletter')->table()->bulk(), ['newsletter_id' => $newsletter->id])
+        ->assertHasNoFormErrors()
+        ->assertNotified('Sending “Weekly” to 2 users');
+
+    Mail::assertQueued(NewsletterMail::class, 2);
+    Mail::assertNotQueued(NewsletterMail::class, fn (NewsletterMail $mail): bool => $mail->hasTo($this->admin->email));
+
+    expect($newsletter->recipients->pluck('id')->sort()->values()->all())->toBe($users->pluck('id')->sort()->values()->all());
+});
+
+it('requires a newsletter to send', function (): void {
+    livewire(ListUsers::class)
+        ->selectTableRecords([$this->admin])
+        ->callAction(TestAction::make('sendNewsletter')->table()->bulk(), ['newsletter_id' => null])
+        ->assertHasFormErrors(['newsletter_id' => 'required']);
 });
