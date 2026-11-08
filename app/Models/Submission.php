@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
@@ -31,6 +32,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
  * @property-read CarbonInterface $updated_at
  * @property-read User $user
  * @property-read Collection<int, SubmissionAnalysis> $analyses
+ * @property-read Collection<int, AnalysisNote> $notes
  * @property-read Collection<int, UserNote> $userNotes
  */
 final class Submission extends Model
@@ -91,6 +93,16 @@ final class Submission extends Model
     public function userNotes(): HasMany
     {
         return $this->hasMany(UserNote::class);
+    }
+
+    /**
+     * Every finding across the submission's analyses.
+     *
+     * @return HasManyThrough<AnalysisNote, SubmissionAnalysis, $this>
+     */
+    public function notes(): HasManyThrough
+    {
+        return $this->hasManyThrough(AnalysisNote::class, SubmissionAnalysis::class);
     }
 
     /**

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum SubmissionState: string
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum SubmissionState: string implements HasColor, HasLabel
 {
     case Pending = 'pending';
     case Processing = 'processing';
@@ -18,6 +21,21 @@ enum SubmissionState: string
             self::Processing => 'Analyzing',
             self::Analyzed => 'Analyzed',
             self::Failed => 'Failed',
+        };
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::Pending => 'gray',
+            self::Processing => 'info',
+            self::Analyzed => 'success',
+            self::Failed => 'danger',
         };
     }
 

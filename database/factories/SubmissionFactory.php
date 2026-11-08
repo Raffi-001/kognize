@@ -46,4 +46,11 @@ final class SubmissionFactory extends Factory
             'state' => SubmissionState::Processing,
         ]);
     }
+
+    public function failed(): self
+    {
+        return $this->state(fn (array $attributes): array => [
+            'state' => SubmissionState::Failed,
+        ]);
+    }
 }

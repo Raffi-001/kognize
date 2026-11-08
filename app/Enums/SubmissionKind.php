@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-enum SubmissionKind: string
+use Filament\Support\Contracts\HasLabel;
+
+enum SubmissionKind: string implements HasLabel
 {
     case Argument = 'argument';
     case Informational = 'informational';
@@ -17,5 +19,10 @@ enum SubmissionKind: string
             self::Informational => 'Informational text',
             self::Personal => 'Personal impression',
         };
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label();
     }
 }
