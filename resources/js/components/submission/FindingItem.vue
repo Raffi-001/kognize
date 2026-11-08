@@ -89,7 +89,7 @@ const canReport = computed(() => !isCommunity.value || !props.finding.isOwner);
     <article
         :class="
             cn(
-                'group/finding relative rounded-xl px-3 py-2.5 transition-[background-color,opacity,box-shadow] duration-200',
+                'group/finding relative rounded-lg px-3 py-2.5 transition-[background-color,opacity,box-shadow] duration-200',
                 active
                     ? 'bg-surface-strong shadow-sm ring-1 ring-foreground/5'
                     : 'hover:bg-surface',
@@ -108,7 +108,7 @@ const canReport = computed(() => !isCommunity.value || !props.finding.isOwner);
         <button
             v-if="!active"
             type="button"
-            class="absolute inset-0 rounded-xl focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
+            class="absolute inset-0 rounded-lg focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none"
             :aria-label="`Show ${tag}: ${finding.title}`"
             @click="$emit('select')"
         />

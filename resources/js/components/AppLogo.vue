@@ -1,20 +1,34 @@
 <script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import type { HTMLAttributes } from 'vue';
+import { cn } from '@/lib/utils';
+
+const props = withDefaults(
+    defineProps<{
+        size?: 'md' | 'lg';
+        class?: HTMLAttributes['class'];
+    }>(),
+    { size: 'md', class: undefined },
+);
 
 const name = usePage().props.name;
 </script>
 
 <template>
-    <div
-        class="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm ring-1 ring-black/5"
+    <span
+        :class="
+            cn(
+                'font-display leading-none tracking-tight text-brand',
+                props.size === 'lg' ? 'text-3xl' : 'text-xl',
+                props.class,
+            )
+        "
     >
-        <AppLogoIcon class="size-5" />
-    </div>
-    <div class="ml-1 grid flex-1 text-left">
+        <span class="group-data-[collapsible=icon]:hidden">{{ name }}</span>
         <span
-            class="truncate font-display text-xl leading-none tracking-tight"
-            >{{ name }}</span
+            class="hidden group-data-[collapsible=icon]:inline"
+            aria-hidden="true"
+            >{{ name.charAt(0) }}</span
         >
-    </div>
+    </span>
 </template>

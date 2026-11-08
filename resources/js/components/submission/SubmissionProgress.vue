@@ -105,7 +105,7 @@ function startOver(): void {
 
 <template>
     <section
-        class="relative w-full min-w-0 overflow-hidden rounded-2xl bg-surface"
+        class="relative w-full min-w-0 overflow-hidden rounded-xl bg-surface"
         aria-live="polite"
         data-test="submission-progress"
     >
@@ -121,7 +121,7 @@ function startOver(): void {
                 <div
                     :class="
                         cn(
-                            'flex size-11 shrink-0 items-center justify-center rounded-xl shadow-xs',
+                            'flex size-11 shrink-0 items-center justify-center rounded-lg shadow-xs',
                             progress.stage === 'done'
                                 ? 'bg-brand text-primary-foreground'
                                 : progress.stage === 'failed'
@@ -159,7 +159,7 @@ function startOver(): void {
                 <li
                     v-for="step in steps"
                     :key="step.stage"
-                    class="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
+                    class="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors"
                     :class="{ 'bg-background': step.state === 'current' }"
                 >
                     <span
@@ -211,7 +211,7 @@ function startOver(): void {
 
             <p
                 v-if="progress.stage === 'failed' && progress.error"
-                class="rounded-xl bg-destructive/8 px-4 py-3 text-sm text-destructive"
+                class="rounded-lg bg-destructive/8 px-4 py-3 text-sm text-destructive"
             >
                 {{ progress.error }}
             </p>

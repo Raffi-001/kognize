@@ -19,7 +19,7 @@ defineEmits<{
 </script>
 
 <template>
-    <div class="rounded-xl bg-surface p-3 shadow-sm" data-test="note-composer">
+    <div class="rounded-lg bg-surface p-3 shadow-sm" data-test="note-composer">
         <div class="mb-2 flex items-center justify-between">
             <p
                 class="text-[10.5px] font-semibold tracking-wider text-community uppercase"

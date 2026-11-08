@@ -19,7 +19,7 @@ const percentage = computed(() => {
 <template>
     <div
         v-if="usage"
-        class="rounded-xl bg-background p-3.5 shadow-xs group-data-[collapsible=icon]:hidden"
+        class="rounded-lg bg-background p-3.5 shadow-xs group-data-[collapsible=icon]:hidden"
     >
         <div class="flex items-center justify-between">
             <p class="text-sm font-medium">Daily analyses</p>

@@ -3,6 +3,7 @@ import { Head, router, setLayoutProps } from '@inertiajs/vue3';
 import { Inbox, Search, SearchX } from '@lucide/vue';
 import { watchDebounced } from '@vueuse/core';
 import { computed, reactive } from 'vue';
+import PageHeader from '@/components/PageHeader.vue';
 import SubmissionListItem from '@/components/submission/SubmissionListItem.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -143,19 +144,15 @@ function clearFilters(): void {
 <template>
     <Head :title="isCommunity ? 'Community feed' : 'My analyses'" />
 
-    <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6">
-        <header class="flex flex-col gap-1">
-            <h1 class="font-display text-4xl tracking-tight">
-                {{ isCommunity ? 'Community feed' : 'My analyses' }}
-            </h1>
-            <p class="text-muted-foreground">
-                {{
-                    isCommunity
-                        ? 'Everything the community has analyzed, newest first.'
-                        : 'Every text and article you have submitted for analysis.'
-                }}
-            </p>
-        </header>
+    <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6">
+        <PageHeader
+            :title="isCommunity ? 'Community feed' : 'My analyses'"
+            :description="
+                isCommunity
+                    ? 'Everything the community has analyzed, newest first.'
+                    : 'Every text and article you have submitted for analysis.'
+            "
+        />
 
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
             <ToggleGroup
@@ -211,7 +208,7 @@ function clearFilters(): void {
 
         <div
             v-if="submissions.data.length > 0"
-            class="grid grid-cols-1 gap-0.5 rounded-2xl bg-surface p-1.5"
+            class="grid grid-cols-1 divide-y border-y"
         >
             <SubmissionListItem
                 v-for="submission in submissions.data"
@@ -221,7 +218,7 @@ function clearFilters(): void {
             />
         </div>
 
-        <Empty v-else class="rounded-2xl bg-surface">
+        <Empty v-else class="rounded-xl border border-dashed">
             <EmptyHeader>
                 <EmptyMedia variant="icon">
                     <SearchX v-if="hasFilters" />

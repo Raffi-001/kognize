@@ -31,14 +31,14 @@ final class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('Realcognize')
+            ->brandName('Kognize')
             ->colors([
-                'primary' => '#2bbf86',
+                'primary' => '#0a74da',
                 'gray' => Color::Zinc,
             ])
             ->font('Instrument Sans')
             ->navigationItems([
-                NavigationItem::make('Back to Realcognize')
+                NavigationItem::make('Back to Kognize')
                     ->url(fn (): string => route('dashboard'))
                     ->icon(Heroicon::OutlinedArrowUturnLeft)
                     ->sort(100),

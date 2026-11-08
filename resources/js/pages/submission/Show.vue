@@ -584,7 +584,7 @@ const progressSteps = computed(() =>
 
         <section
             v-if="submission.is_in_progress"
-            class="rounded-2xl bg-surface p-5"
+            class="rounded-xl bg-surface p-5"
             aria-live="polite"
         >
             <div class="flex items-center gap-3">
@@ -601,7 +601,7 @@ const progressSteps = computed(() =>
                 <li
                     v-for="step in progressSteps"
                     :key="step.key"
-                    class="flex items-center gap-3 rounded-xl bg-background px-4 py-3"
+                    class="flex items-center gap-3 rounded-lg bg-background px-4 py-3"
                 >
                     <component
                         :is="step.icon"
@@ -746,7 +746,7 @@ const progressSteps = computed(() =>
 
                 <p
                     v-if="visibleFindings.length === 0 && !composer"
-                    class="rounded-xl bg-surface px-4 py-6 text-center text-sm text-muted-foreground"
+                    class="rounded-lg bg-surface px-4 py-6 text-center text-sm text-muted-foreground"
                 >
                     {{
                         submission.is_in_progress
@@ -776,7 +776,7 @@ const progressSteps = computed(() =>
     <Sheet v-model:open="sheetOpen">
         <SheetContent
             side="bottom"
-            class="max-h-[85svh] gap-0 overflow-y-auto rounded-t-2xl border-0 p-0"
+            class="max-h-[85svh] gap-0 overflow-y-auto rounded-t-xl border-0 p-0"
             data-test="finding-sheet"
         >
             <SheetHeader

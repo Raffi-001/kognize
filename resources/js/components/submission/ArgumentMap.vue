@@ -47,9 +47,9 @@ const reasoning = {
 </script>
 
 <template>
-    <Collapsible v-model:open="open" class="rounded-2xl bg-surface">
+    <Collapsible v-model:open="open" class="rounded-xl bg-surface">
         <CollapsibleTrigger
-            class="flex w-full items-start gap-3 rounded-2xl p-4 text-left transition-colors hover:bg-surface-strong/60 sm:p-5"
+            class="flex w-full items-start gap-3 rounded-xl p-4 text-left transition-colors hover:bg-surface-strong/60 sm:p-5"
         >
             <span
                 class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-background text-brand-strong shadow-xs"
@@ -83,7 +83,7 @@ const reasoning = {
                 <section
                     v-for="(claim, index) in map.claims"
                     :key="index"
-                    class="rounded-xl bg-background p-4"
+                    class="rounded-lg bg-background p-4"
                 >
                     <p
                         class="text-[10.5px] font-semibold tracking-wider text-muted-foreground uppercase"
@@ -165,7 +165,7 @@ const reasoning = {
 
                 <p
                     lang="hy"
-                    class="rounded-xl bg-background px-4 py-3 text-sm leading-relaxed text-foreground/80"
+                    class="rounded-lg bg-background px-4 py-3 text-sm leading-relaxed text-foreground/80"
                 >
                     {{ map.overall.comment }}
                 </p>

@@ -31,7 +31,7 @@ it('shows the admin dashboard with the moderation queues', function (): void {
     $this->actingAs(User::factory()->admin()->create())
         ->get('/admin')
         ->assertOk()
-        ->assertSee('Back to Realcognize')
+        ->assertSee('Back to Kognize')
         ->assertSee(route('dashboard'))
         ->assertSee('Polls')
         ->assertSee('Questions');

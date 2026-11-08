@@ -20,18 +20,21 @@ withDefaults(
 <template>
     <Link
         :href="show(submission.id)"
-        class="group flex min-w-0 items-center gap-4 rounded-xl px-3 py-3 transition-colors hover:bg-background sm:px-4"
+        class="group flex min-w-0 items-center gap-4 py-3"
         data-test="submission-list-item"
     >
         <div
-            class="hidden size-9 shrink-0 items-center justify-center rounded-lg bg-background text-muted-foreground shadow-xs sm:flex"
+            class="hidden size-9 shrink-0 items-center justify-center rounded-lg bg-surface text-muted-foreground sm:flex"
         >
             <Globe v-if="submission.source" class="size-4" />
             <Type v-else class="size-4" />
         </div>
 
         <div class="min-w-0 flex-1">
-            <p class="truncate text-sm font-medium" lang="hy">
+            <p
+                class="truncate text-sm font-medium group-hover:text-brand-strong"
+                lang="hy"
+            >
                 {{ submission.title }}
             </p>
             <p

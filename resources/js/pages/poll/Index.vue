@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import { MessagesSquare } from '@lucide/vue';
 import { computed } from 'vue';
+import PageHeader from '@/components/PageHeader.vue';
 import PollCard from '@/components/poll/PollCard.vue';
 import {
     Empty,
@@ -38,27 +39,24 @@ const unanswered = computed(
 <template>
     <Head title="Public questions" />
 
-    <div class="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
-        <header class="flex flex-col gap-1">
-            <h1 class="font-display text-4xl">Public questions</h1>
-            <p class="text-muted-foreground">
-                Questions of values raised by analyzed texts, asked without
-                their context so you can judge the reasoning, not the side.
-                Results and the source appear after you answer.
-            </p>
-            <p
-                v-if="unanswered > 0"
-                class="text-sm font-medium text-brand-strong"
-            >
-                {{ unanswered }} waiting for your answer
-            </p>
-        </header>
+    <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6">
+        <PageHeader
+            title="Public questions"
+            description="Questions of values, asked without their context so you judge the reasoning, not the side. Results and the source appear after you answer."
+        >
+            <template v-if="unanswered > 0" #actions>
+                <span
+                    class="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-medium text-brand-strong"
+                    >{{ unanswered }} waiting for your answer</span
+                >
+            </template>
+        </PageHeader>
 
-        <div v-if="polls.length > 0" class="grid gap-4">
+        <div v-if="polls.length > 0" class="grid max-w-3xl gap-4">
             <PollCard v-for="poll in polls" :key="poll.id" :poll="poll" />
         </div>
 
-        <Empty v-else class="rounded-2xl bg-surface">
+        <Empty v-else class="rounded-xl bg-surface">
             <EmptyHeader>
                 <EmptyMedia variant="icon">
                     <MessagesSquare />

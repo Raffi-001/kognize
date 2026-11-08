@@ -62,7 +62,7 @@ function toggle(type: AspectKey): void {
 
 <template>
     <section
-        class="grid gap-5 rounded-2xl bg-surface p-4 sm:p-5 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center lg:gap-8"
+        class="grid gap-5 rounded-xl bg-surface p-4 sm:p-5 lg:grid-cols-[auto_minmax(0,1fr)] lg:items-center lg:gap-8"
         data-test="health-summary"
     >
         <div v-if="health" class="flex items-center gap-4">

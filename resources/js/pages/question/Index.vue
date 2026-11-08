@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { CircleHelp, FileText, MessageCircle, Paperclip } from '@lucide/vue';
+import PageHeader from '@/components/PageHeader.vue';
 import {
     Empty,
     EmptyDescription,
@@ -66,17 +67,11 @@ function changeStatus(value: unknown): void {
 <template>
     <Head title="Unresolved issues" />
 
-    <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-8 sm:px-6">
-        <header class="flex flex-col gap-1">
-            <h1 class="font-display text-4xl tracking-tight">
-                Unresolved issues
-            </h1>
-            <p class="text-muted-foreground">
-                Factual claims the analyses could not settle on their own. Cite
-                a source on the page of an issue; moderators resolve it once
-                verified evidence points one way.
-            </p>
-        </header>
+    <div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-6 sm:px-6">
+        <PageHeader
+            title="Unresolved issues"
+            description="Factual claims the analyses could not settle on their own. Cite a source on an issue's page; moderators resolve it once verified evidence points one way."
+        />
 
         <ToggleGroup
             type="single"
@@ -102,40 +97,14 @@ function changeStatus(value: unknown): void {
             >
         </ToggleGroup>
 
-        <ol
-            v-if="questions.data.length > 0"
-            class="grid gap-0.5 rounded-2xl bg-surface p-1.5"
-        >
+        <ol v-if="questions.data.length > 0" class="grid divide-y border-y">
             <li v-for="question in questions.data" :key="question.id">
                 <Link
                     :href="show(question.id)"
-                    class="group flex gap-4 rounded-xl px-3 py-3 transition-colors hover:bg-background sm:px-4"
+                    class="group block py-3"
                     data-test="question-list-item"
                 >
-                    <div
-                        class="hidden w-16 shrink-0 flex-col items-end gap-1 pt-0.5 text-xs text-muted-foreground tabular-nums sm:flex"
-                    >
-                        <span
-                            class="flex items-center gap-1"
-                            :class="{
-                                'font-medium text-foreground':
-                                    question.evidence_count > 0,
-                            }"
-                            :title="`${question.evidence_count} sources cited`"
-                        >
-                            {{ question.evidence_count }}
-                            <Paperclip class="size-3" />
-                        </span>
-                        <span
-                            class="flex items-center gap-1"
-                            :title="`${question.comments_count} replies`"
-                        >
-                            {{ question.comments_count }}
-                            <MessageCircle class="size-3" />
-                        </span>
-                    </div>
-
-                    <div class="min-w-0 flex-1">
+                    <div class="min-w-0">
                         <p
                             lang="hy"
                             class="text-[0.95rem] leading-snug font-medium text-pretty group-hover:text-brand-strong"
@@ -167,13 +136,32 @@ function changeStatus(value: unknown): void {
                                     ? `resolved ${question.resolved_at_human}`
                                     : `raised ${question.created_at_human}`
                             }}</span>
+                            <span aria-hidden="true">·</span>
+                            <span
+                                class="inline-flex items-center gap-1 tabular-nums"
+                                :class="{
+                                    'font-medium text-foreground':
+                                        question.evidence_count > 0,
+                                }"
+                                :title="`${question.evidence_count} sources cited`"
+                            >
+                                <Paperclip class="size-3" />
+                                {{ question.evidence_count }}
+                            </span>
+                            <span
+                                class="inline-flex items-center gap-1 tabular-nums"
+                                :title="`${question.comments_count} replies`"
+                            >
+                                <MessageCircle class="size-3" />
+                                {{ question.comments_count }}
+                            </span>
                         </p>
                     </div>
                 </Link>
             </li>
         </ol>
 
-        <Empty v-else class="rounded-2xl bg-surface">
+        <Empty v-else class="rounded-xl border border-dashed">
             <EmptyHeader>
                 <EmptyMedia variant="icon">
                     <CircleHelp />

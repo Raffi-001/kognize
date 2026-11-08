@@ -19,11 +19,11 @@ enum Plan: string
 
     public function dailySubmissions(): int
     {
-        return config()->integer(sprintf('realcognize.plans.%s.daily_submissions', $this->value));
+        return config()->integer(sprintf('kognize.plans.%s.daily_submissions', $this->value));
     }
 
     public function invitations(): int
     {
-        return config()->integer(sprintf('realcognize.plans.%s.invitations', $this->value));
+        return config()->integer(sprintf('kognize.plans.%s.invitations', $this->value));
     }
 }

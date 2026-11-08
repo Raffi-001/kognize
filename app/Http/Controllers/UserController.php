@@ -23,7 +23,7 @@ final readonly class UserController
     {
         return Inertia::render('user/Create', [
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
-            'inviteOnly' => config()->boolean('realcognize.invite_only'),
+            'inviteOnly' => config()->boolean('kognize.invite_only'),
             'invitationCode' => $request->string('invitation')->value(),
         ]);
     }

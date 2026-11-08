@@ -38,7 +38,7 @@ const remainingRatio = computed(() => {
 
 <template>
     <header
-        class="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between gap-2 bg-background/85 px-4 backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:rounded-t-xl md:px-6"
+        class="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between gap-2 bg-background/85 px-4 backdrop-blur transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:rounded-t-lg md:px-6"
     >
         <div class="flex min-w-0 items-center gap-2">
             <SidebarTrigger class="-ml-1" />

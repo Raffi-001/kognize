@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'invite_only' => (bool) env('REALCOGNIZE_INVITE_ONLY', true),
+    'invite_only' => (bool) env('KOGNIZE_INVITE_ONLY', true),
 
     /*
     |--------------------------------------------------------------------------

@@ -35,7 +35,7 @@ const handleDelete = () => {
     <div class="flex items-center justify-between border-b p-4 last:border-b-0">
         <div class="flex items-center gap-4">
             <div
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted"
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted"
             >
                 <KeyRound class="h-5 w-5 text-muted-foreground" />
             </div>

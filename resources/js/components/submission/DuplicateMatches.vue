@@ -17,7 +17,7 @@ defineEmits<{
 </script>
 
 <template>
-    <div class="overflow-hidden rounded-2xl bg-questions-soft/70">
+    <div class="overflow-hidden rounded-xl bg-questions-soft/70">
         <div class="flex items-start gap-3 px-4 pt-4">
             <div
                 class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-background text-questions shadow-xs"
@@ -39,7 +39,7 @@ defineEmits<{
             <li v-for="duplicate in duplicates" :key="duplicate.id">
                 <Link
                     :href="show(duplicate.id)"
-                    class="group flex items-start gap-3 rounded-xl bg-background/70 px-3 py-2.5 transition-colors hover:bg-background"
+                    class="group flex items-start gap-3 rounded-lg bg-background/70 px-3 py-2.5 transition-colors hover:bg-background"
                 >
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-wrap items-center gap-2">

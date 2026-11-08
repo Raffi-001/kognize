@@ -60,7 +60,7 @@ it('may register a new user with an invitation', function (): void {
 });
 
 it('may register without an invitation when registration is open', function (): void {
-    config(['realcognize.invite_only' => false]);
+    config(['kognize.invite_only' => false]);
 
     $response = $this->fromRoute('register')
         ->post(route('register.store'), [

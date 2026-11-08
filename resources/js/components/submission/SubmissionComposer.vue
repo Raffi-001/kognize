@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useForm, useHttp, usePage } from '@inertiajs/vue3';
-import { Globe, Link2, ScanSearch, Trash2, Type } from '@lucide/vue';
+import { Link2, ScanSearch, Trash2, Type } from '@lucide/vue';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, ref, watch } from 'vue';
 import InputError from '@/components/InputError.vue';
@@ -179,7 +179,7 @@ function handleKeydown(event: KeyboardEvent): void {
 </script>
 
 <template>
-    <div class="overflow-hidden rounded-2xl bg-surface">
+    <div class="overflow-hidden rounded-xl bg-surface">
         <Tabs v-model="mode" class="gap-0">
             <div
                 class="flex flex-wrap items-center justify-between gap-3 px-4 pt-4 sm:px-5"
@@ -211,7 +211,7 @@ function handleKeydown(event: KeyboardEvent): void {
                     @submit.prevent="submitText()"
                 >
                     <div
-                        class="group/editor relative rounded-xl bg-background shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/30"
+                        class="group/editor relative rounded-lg bg-background shadow-xs transition-shadow focus-within:ring-[3px] focus-within:ring-ring/30"
                     >
                         <Textarea
                             v-model="textForm.body"
@@ -313,57 +313,37 @@ function handleKeydown(event: KeyboardEvent): void {
                     class="grid gap-3 p-4 sm:p-5"
                     @submit.prevent="submitUrl()"
                 >
-                    <div class="rounded-xl bg-background p-5 shadow-xs sm:p-8">
-                        <div class="mx-auto grid max-w-xl gap-3 text-center">
-                            <div
-                                class="mx-auto flex size-10 items-center justify-center rounded-full bg-background text-brand-strong shadow-xs"
-                            >
-                                <Globe class="size-5" />
-                            </div>
-                            <p class="text-sm text-muted-foreground">
-                                Paste a link to an Armenian article. We'll fetch
-                                the text and analyze it for you.
-                            </p>
-                            <InputGroup
-                                class="h-11 border-0 bg-surface dark:bg-surface"
-                            >
-                                <InputGroupAddon>
-                                    <Link2 />
-                                </InputGroupAddon>
-                                <InputGroupInput
-                                    v-model="urlForm.url"
-                                    name="url"
-                                    type="url"
-                                    inputmode="url"
-                                    placeholder="https://example.am/article"
-                                    aria-label="Article URL"
-                                />
-                                <InputGroupAddon
-                                    v-if="duplicateCheck.processing"
-                                    align="inline-end"
-                                >
-                                    <Spinner />
-                                </InputGroupAddon>
-                            </InputGroup>
-                            <InputError
-                                :message="urlForm.errors.url"
-                                class="text-left"
+                    <p class="text-sm text-muted-foreground">
+                        Paste a link to an Armenian article. We'll fetch the
+                        text and analyze it for you.
+                    </p>
+                    <div class="flex flex-col gap-2 sm:flex-row">
+                        <InputGroup
+                            class="h-14 flex-1 border-2 border-input bg-background shadow-xs has-[[data-slot=input-group-control]:focus-visible]:border-brand dark:bg-background"
+                        >
+                            <InputGroupAddon class="pl-4">
+                                <Link2 class="size-5" />
+                            </InputGroupAddon>
+                            <InputGroupInput
+                                v-model="urlForm.url"
+                                name="url"
+                                type="url"
+                                inputmode="url"
+                                placeholder="https://example.am/article"
+                                aria-label="Article URL"
+                                class="text-base md:text-lg"
                             />
-                        </div>
-                    </div>
-
-                    <DuplicateMatches
-                        v-if="urlDuplicates.length > 0"
-                        :duplicates="urlDuplicates"
-                        :processing="urlForm.processing"
-                        @proceed="submitUrl(true)"
-                        @dismiss="urlForm.reset()"
-                    />
-
-                    <div v-else class="flex justify-end">
+                            <InputGroupAddon
+                                v-if="duplicateCheck.processing"
+                                align="inline-end"
+                            >
+                                <Spinner />
+                            </InputGroupAddon>
+                        </InputGroup>
                         <Button
+                            v-if="urlDuplicates.length === 0"
                             type="submit"
-                            size="lg"
+                            class="h-14 px-6 text-base"
                             :disabled="!isValidUrl || urlForm.processing"
                             data-test="analyze-url-button"
                         >
@@ -372,6 +352,15 @@ function handleKeydown(event: KeyboardEvent): void {
                             Fetch &amp; analyze
                         </Button>
                     </div>
+                    <InputError :message="urlForm.errors.url" />
+
+                    <DuplicateMatches
+                        v-if="urlDuplicates.length > 0"
+                        :duplicates="urlDuplicates"
+                        :processing="urlForm.processing"
+                        @proceed="submitUrl(true)"
+                        @dismiss="urlForm.reset()"
+                    />
                 </form>
             </TabsContent>
         </Tabs>

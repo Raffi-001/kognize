@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight } from '@lucide/vue';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
+import AppLogo from '@/components/AppLogo.vue';
 import { Button } from '@/components/ui/button';
 import { analysisTypes, aspects } from '@/lib/analysis';
 import { dashboard, login, register } from '@/routes';
@@ -34,23 +34,11 @@ const preview: { text: string; type: AnalysisTypeValue | null }[] = [
     <Head title="Read between the lines" />
 
     <div class="relative min-h-svh overflow-hidden bg-background">
-        <div
-            aria-hidden="true"
-            class="pointer-events-none absolute inset-x-0 -top-48 mx-auto h-[36rem] max-w-5xl rounded-full bg-primary/25 blur-3xl dark:bg-primary/10"
-        />
-
         <header
             class="relative mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5"
         >
             <div class="flex items-center gap-2">
-                <span
-                    class="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground ring-1 ring-black/5"
-                >
-                    <AppLogoIcon class="size-5" />
-                </span>
-                <span class="font-display text-2xl tracking-tight">{{
-                    $page.props.name
-                }}</span>
+                <AppLogo class="text-2xl" />
             </div>
 
             <nav class="flex items-center gap-2">
@@ -116,7 +104,7 @@ const preview: { text: string; type: AnalysisTypeValue | null }[] = [
             </section>
 
             <section
-                class="mx-auto mt-16 max-w-4xl overflow-hidden rounded-2xl bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04),0_24px_48px_-24px_rgba(0,0,0,0.18)]"
+                class="mx-auto mt-16 max-w-4xl overflow-hidden rounded-xl bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04),0_24px_48px_-24px_rgba(0,0,0,0.18)]"
                 aria-label="Example analysis"
             >
                 <div class="flex items-center gap-1.5 bg-surface px-4 py-3">
@@ -144,7 +132,7 @@ const preview: { text: string; type: AnalysisTypeValue | null }[] = [
                         <li
                             v-for="type in analysisTypes"
                             :key="type"
-                            class="flex items-start gap-3 rounded-xl bg-surface p-3"
+                            class="flex items-start gap-3 rounded-lg bg-surface p-3"
                         >
                             <span
                                 class="flex size-8 shrink-0 items-center justify-center rounded-lg"

@@ -36,7 +36,7 @@ function submit(): void {
 </script>
 
 <template>
-    <article class="rounded-2xl bg-surface p-5" data-test="poll-card">
+    <article class="rounded-xl bg-surface p-5" data-test="poll-card">
         <div class="flex items-start justify-between gap-3">
             <h2 lang="hy" class="text-[0.95rem] leading-relaxed font-medium">
                 {{ poll.question }}
@@ -113,7 +113,7 @@ function submit(): void {
                     :aria-checked="form.poll_option_id === option.id"
                     :class="
                         cn(
-                            'flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm transition-colors',
+                            'flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-left text-sm transition-colors',
                             form.poll_option_id === option.id
                                 ? 'bg-background shadow-xs ring-2 ring-primary'
                                 : 'bg-background/60 hover:bg-background',

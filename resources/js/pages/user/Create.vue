@@ -69,8 +69,8 @@ const invitationCode = ref(props.invitationCode);
                     :value="invitationCode"
                 />
                 <p class="text-xs text-muted-foreground">
-                    Realcognize is invite-only. Use the code from your
-                    invitation email.
+                    Kognize is invite-only. Use the code from your invitation
+                    email.
                 </p>
                 <InputError :message="errors.invitation_code" />
             </div>

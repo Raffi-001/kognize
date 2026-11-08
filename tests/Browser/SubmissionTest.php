@@ -16,7 +16,8 @@ it('renders the analyze page with the composer', function (): void {
 
     $page = visit(route('dashboard'));
 
-    $page->assertSee('Read between the')
+    $page->assertSee('Analyze a text')
+        ->assertDontSee('What we look for')
         ->assertSee('No analyses yet')
         ->assertSee('Fetch & analyze')
         ->click('Text')

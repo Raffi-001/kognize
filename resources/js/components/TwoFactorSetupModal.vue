@@ -204,7 +204,7 @@ watch(
                             class="flex w-full items-center justify-center space-x-2"
                         >
                             <div
-                                class="flex w-full items-stretch overflow-hidden rounded-xl border border-border"
+                                class="flex w-full items-stretch overflow-hidden rounded-lg border border-border"
                             >
                                 <div
                                     v-if="!manualSetupKey"

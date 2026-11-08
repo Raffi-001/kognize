@@ -13,8 +13,8 @@ it('has a label for every plan', function (Plan $plan, string $label): void {
 
 it('reads its limits from config', function (Plan $plan): void {
     config([
-        'realcognize.plans.'.$plan->value.'.daily_submissions' => 7,
-        'realcognize.plans.'.$plan->value.'.invitations' => 4,
+        'kognize.plans.'.$plan->value.'.daily_submissions' => 7,
+        'kognize.plans.'.$plan->value.'.invitations' => 4,
     ]);
 
     expect($plan->dailySubmissions())->toBe(7)

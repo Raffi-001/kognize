@@ -35,7 +35,7 @@ final class CreateUserRequest extends FormRequest
                 Password::defaults(),
             ],
             'invitation_code' => [
-                config()->boolean('realcognize.invite_only') ? 'required' : 'nullable',
+                config()->boolean('kognize.invite_only') ? 'required' : 'nullable',
                 'string',
                 new ValidInvitationCode,
             ],
