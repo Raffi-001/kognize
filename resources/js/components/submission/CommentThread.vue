@@ -2,6 +2,8 @@
 import { Form } from '@inertiajs/vue3';
 import { Flag, SendHorizontal } from '@lucide/vue';
 import InputError from '@/components/InputError.vue';
+import AuthorLink from '@/components/reputation/AuthorLink.vue';
+import VoteControl from '@/components/reputation/VoteControl.vue';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -39,9 +41,7 @@ const { report } = useReportDialog();
                 </Avatar>
                 <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-1.5 text-xs">
-                        <span class="font-medium">{{
-                            comment.author.name
-                        }}</span>
+                        <AuthorLink :author="comment.author" />
                         <span
                             v-if="comment.is_owner"
                             class="text-muted-foreground"
@@ -51,10 +51,19 @@ const { report } = useReportDialog();
                         <span class="text-muted-foreground">{{
                             comment.created_at_human
                         }}</span>
+                        <VoteControl
+                            class="ml-auto"
+                            size="xs"
+                            type="comment"
+                            :id="comment.id"
+                            :score="comment.score"
+                            :my-vote="comment.my_vote"
+                            :own="comment.is_owner"
+                        />
                         <button
                             v-if="!comment.is_owner"
                             type="button"
-                            class="ml-auto text-muted-foreground opacity-0 transition-opacity group-hover/comment:opacity-100 hover:text-destructive focus-visible:opacity-100"
+                            class="text-muted-foreground opacity-0 transition-opacity group-hover/comment:opacity-100 hover:text-destructive focus-visible:opacity-100"
                             aria-label="Report reply"
                             @click="report('comment', comment.id)"
                         >

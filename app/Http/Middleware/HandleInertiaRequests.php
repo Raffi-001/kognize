@@ -93,9 +93,9 @@ final class HandleInertiaRequests extends Middleware
      */
     private function usage(User $user): array
     {
-        $dailySubmissions = $user->plan->dailySubmissions();
+        $dailySubmissions = $user->dailySubmissionLimit();
         $remainingSubmissions = $user->remainingSubmissionsToday();
-        $invitations = $user->plan->invitations();
+        $invitations = $user->invitationLimit();
         $remainingInvitations = $user->remainingInvitations();
 
         return [

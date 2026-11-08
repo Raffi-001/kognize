@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, router } from '@inertiajs/vue3';
-import { LogOut, Settings } from '@lucide/vue';
+import { LogOut, Settings, Trophy } from '@lucide/vue';
 import {
     DropdownMenuGroup,
     DropdownMenuItem,
@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import UserInfo from '@/components/UserInfo.vue';
 import { logout } from '@/routes';
+import { show as showProfile } from '@/routes/profiles';
 import { edit } from '@/routes/user-profile';
 import type { User } from '@/types';
 
@@ -31,6 +32,20 @@ defineProps<Props>();
     </DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuGroup>
+        <DropdownMenuItem :as-child="true">
+            <Link
+                class="block w-full cursor-pointer"
+                :href="showProfile(user.id)"
+                data-test="profile-link"
+            >
+                <Trophy class="mr-2 h-4 w-4" />
+                Your profile
+                <span
+                    class="ml-auto text-xs text-muted-foreground tabular-nums"
+                    >{{ user.reputation.toLocaleString() }}</span
+                >
+            </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem :as-child="true">
             <Link class="block w-full cursor-pointer" :href="edit()" prefetch>
                 <Settings class="mr-2 h-4 w-4" />

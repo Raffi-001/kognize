@@ -24,6 +24,8 @@ final class UserNoteResource extends JsonResource
             'label' => $this->label,
             'text' => $this->text,
             'author' => UserSummaryResource::make($this->user),
+            'score' => $this->score,
+            'my_vote' => $this->voteOf($request->user()?->getAuthIdentifier()),
             'is_owner' => $request->user()?->getAuthIdentifier() === $this->user_id,
             'created_at_human' => $this->created_at->diffForHumans(),
             'comments' => CommentResource::collection($this->comments),

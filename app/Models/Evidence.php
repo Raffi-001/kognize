@@ -7,9 +7,11 @@ namespace App\Models;
 use App\Enums\EvidenceAssessment;
 use App\Enums\EvidenceVerification;
 use App\Enums\Stance;
+use App\Models\Concerns\HasVotes;
 use Carbon\CarbonInterface;
 use Database\Factories\EvidenceFactory;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read int $id
  * @property-read int $analysis_note_id
  * @property-read string $user_id
+ * @property-read int $score
  * @property-read Stance $stance
  * @property-read string $url
  * @property-read string $quote
@@ -31,6 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read CarbonInterface $updated_at
  * @property-read AnalysisNote $question
  * @property-read User $user
+ * @property-read Collection<int, Vote> $votes
  */
 #[Table(name: 'evidence')]
 final class Evidence extends Model
@@ -38,10 +42,13 @@ final class Evidence extends Model
     /** @use HasFactory<EvidenceFactory> */
     use HasFactory;
 
+    use HasVotes;
+
     /**
      * @var array<string, mixed>
      */
     protected $attributes = [
+        'score' => 0,
         'explanation' => null,
         'verification' => 'pending',
         'page_title' => null,
@@ -59,6 +66,7 @@ final class Evidence extends Model
             'id' => 'integer',
             'analysis_note_id' => 'integer',
             'user_id' => 'string',
+            'score' => 'integer',
             'stance' => Stance::class,
             'url' => 'string',
             'quote' => 'string',

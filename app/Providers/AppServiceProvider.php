@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Models\AnalysisNote;
 use App\Models\Comment;
+use App\Models\Evidence;
 use App\Models\Submission;
 use App\Models\User;
 use App\Models\UserNote;
@@ -30,6 +31,7 @@ final class AppServiceProvider extends ServiceProvider
             'analysis_note' => AnalysisNote::class,
             'user_note' => UserNote::class,
             'comment' => Comment::class,
+            'evidence' => Evidence::class,
         ]);
     }
 }

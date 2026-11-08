@@ -14,7 +14,10 @@ use SensitiveParameter;
 
 final readonly class CreateUser
 {
-    public function __construct(private NotifyActivity $notify) {}
+    public function __construct(
+        private NotifyActivity $notify,
+        private AwardBadges $badges,
+    ) {}
 
     /**
      * Create the account and, when a code is given, redeem it: each code works
@@ -55,6 +58,10 @@ final readonly class CreateUser
                 ['type' => 'user', 'id' => $user->id, 'title' => $user->name],
                 route('invitations.index'),
             );
+
+            if ($user->referrer instanceof User) {
+                $this->badges->handle($user->referrer);
+            }
 
             event(new Registered($user));
 

@@ -12,7 +12,10 @@ use App\Models\UserNote;
 
 final readonly class CreateComment
 {
-    public function __construct(private NotifyActivity $notify) {}
+    public function __construct(
+        private NotifyActivity $notify,
+        private AwardBadges $badges,
+    ) {}
 
     public function handle(AnalysisNote|UserNote $commentable, User $user, string $text): Comment
     {
@@ -45,6 +48,8 @@ final readonly class CreateComment
             route('submissions.show', $submission),
             $comment->text,
         );
+
+        $this->badges->handle($user);
 
         return $comment;
     }

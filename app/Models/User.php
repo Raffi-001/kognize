@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\NotificationKind;
 use App\Enums\Plan;
+use App\Enums\Privilege;
 use App\Enums\UrlSubmissionStatus;
 use Carbon\CarbonInterface;
 use Database\Factories\UserFactory;
@@ -35,6 +36,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read string|null $referrer_id
  * @property-read list<string>|null $muted_notifications
  * @property-read bool $notification_digest
+ * @property-read int $reputation
  * @property-read string|null $remember_token
  * @property-read string|null $two_factor_secret
  * @property-read string|null $two_factor_recovery_codes
@@ -46,6 +48,9 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read User|null $referrer
  * @property-read Collection<int, User> $referees
  * @property-read Collection<int, UrlSubmission> $urlSubmissions
+ * @property-read Collection<int, Vote> $votes
+ * @property-read Collection<int, ReputationEvent> $reputationEvents
+ * @property-read Collection<int, UserBadge> $badges
  */
 #[Hidden([
     'password',
@@ -72,6 +77,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         'referrer_id' => null,
         'muted_notifications' => null,
         'notification_digest' => false,
+        'reputation' => 1,
     ];
 
     /**
@@ -90,6 +96,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'referrer_id' => 'string',
             'muted_notifications' => 'array',
             'notification_digest' => 'boolean',
+            'reputation' => 'integer',
             'remember_token' => 'string',
             'two_factor_secret' => 'string',
             'two_factor_recovery_codes' => 'string',
@@ -143,6 +150,53 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         return $this->hasMany(UrlSubmission::class);
     }
 
+    /**
+     * Votes this user cast.
+     *
+     * @return HasMany<Vote, $this>
+     */
+    public function votes(): HasMany
+    {
+        return $this->hasMany(Vote::class);
+    }
+
+    /**
+     * @return HasMany<ReputationEvent, $this>
+     */
+    public function reputationEvents(): HasMany
+    {
+        return $this->hasMany(ReputationEvent::class);
+    }
+
+    /**
+     * @return HasMany<UserBadge, $this>
+     */
+    public function badges(): HasMany
+    {
+        return $this->hasMany(UserBadge::class);
+    }
+
+    public function hasPrivilege(Privilege $privilege): bool
+    {
+        return $this->reputation >= $privilege->threshold();
+    }
+
+    public function dailySubmissionLimit(): int
+    {
+        return $this->plan->dailySubmissions() + array_sum(array_map(
+            fn (Privilege $privilege): int => $this->hasPrivilege($privilege) ? $privilege->bonusDailySubmissions() : 0,
+            Privilege::cases(),
+        ));
+    }
+
+    public function invitationLimit(): int
+    {
+        return $this->plan->invitations() + array_sum(array_map(
+            fn (Privilege $privilege): int => $this->hasPrivilege($privilege) ? $privilege->bonusInvitations() : 0,
+            Privilege::cases(),
+        ));
+    }
+
     public function wantsNotification(NotificationKind $kind): bool
     {
         return ! in_array($kind->value, $this->muted_notifications ?? [], true);
@@ -164,12 +218,12 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
 
     public function remainingSubmissionsToday(): int
     {
-        return max(0, $this->plan->dailySubmissions() - $this->submissionsUsedToday());
+        return max(0, $this->dailySubmissionLimit() - $this->submissionsUsedToday());
     }
 
     public function remainingInvitations(): int
     {
-        return max(0, $this->plan->invitations() - $this->invitations()->count());
+        return max(0, $this->invitationLimit() - $this->invitations()->count());
     }
 
     /**

@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 use App\Enums\NotificationKind;
 use App\Enums\Plan;
+use App\Enums\Privilege;
 use App\Enums\UrlSubmissionStatus;
 use App\Models\Invitation;
+use App\Models\ReputationEvent;
 use App\Models\Submission;
 use App\Models\UrlSubmission;
 use App\Models\User;
+use App\Models\UserBadge;
+use App\Models\Vote;
 use Filament\Facades\Filament;
 
 test('to array', function (): void {
@@ -28,6 +32,7 @@ test('to array', function (): void {
             'referrer_id',
             'muted_notifications',
             'notification_digest',
+            'reputation',
         ]);
 });
 
@@ -117,4 +122,30 @@ it('wants every notification it has not muted', function (): void {
     expect($user->wantsNotification(NotificationKind::CommentPosted))->toBeFalse()
         ->and($user->wantsNotification(NotificationKind::EvidenceChecked))->toBeTrue()
         ->and(User::factory()->make()->wantsNotification(NotificationKind::CommentPosted))->toBeTrue();
+});
+
+it('has votes, a reputation ledger and badges', function (): void {
+    $user = User::factory()->create();
+    $vote = Vote::factory()->for($user)->create();
+    $event = ReputationEvent::factory()->for($user)->create();
+    $badge = UserBadge::factory()->for($user)->create();
+
+    expect($user->votes->sole()->is($vote))->toBeTrue()
+        ->and($user->reputationEvents->sole()->is($event))->toBeTrue()
+        ->and($user->badges->sole()->is($badge))->toBeTrue();
+});
+
+it('earns privileges and bigger limits with reputation', function (): void {
+    $newcomer = User::factory()->create();
+    $trusted = User::factory()->create(['reputation' => 1000]);
+
+    expect($newcomer->reputation)->toBe(1)
+        ->and($newcomer->hasPrivilege(Privilege::VoteUp))->toBeTrue()
+        ->and($newcomer->hasPrivilege(Privilege::VoteDown))->toBeFalse()
+        ->and($newcomer->dailySubmissionLimit())->toBe(Plan::Standard->dailySubmissions())
+        ->and($newcomer->invitationLimit())->toBe(Plan::Standard->invitations())
+        ->and($trusted->dailySubmissionLimit())->toBe(Plan::Standard->dailySubmissions() + 3)
+        ->and($trusted->invitationLimit())->toBe(Plan::Standard->invitations() + 3)
+        ->and($trusted->remainingSubmissionsToday())->toBe(Plan::Standard->dailySubmissions() + 3)
+        ->and($trusted->remainingInvitations())->toBe(Plan::Standard->invitations() + 3);
 });

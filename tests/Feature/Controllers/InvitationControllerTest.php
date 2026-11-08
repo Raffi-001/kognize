@@ -50,7 +50,7 @@ it('lists the invitations of the user', function (): void {
                 'email' => 'used@example.com',
                 'code' => '11111',
                 'is_used' => true,
-                'invitee' => ['id' => $invitee->id, 'name' => 'Invitee'],
+                'invitee' => ['id' => $invitee->id, 'name' => 'Invitee', 'reputation' => 1],
                 'used_at_human' => '0 seconds ago',
                 'created_at_human' => '0 seconds ago',
             ]));

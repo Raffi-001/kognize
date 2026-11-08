@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePage } from '@inertiajs/vue3';
 import {
     CircleAlert,
     CircleCheck,
@@ -8,6 +9,8 @@ import {
     Scale,
 } from '@lucide/vue';
 import { ref } from 'vue';
+import AuthorLink from '@/components/reputation/AuthorLink.vue';
+import VoteControl from '@/components/reputation/VoteControl.vue';
 import EvidenceForm from '@/components/submission/EvidenceForm.vue';
 import { Button } from '@/components/ui/button';
 import type { FindingQuestion } from '@/lib/findings';
@@ -20,6 +23,7 @@ defineProps<{
 }>();
 
 const adding = ref(false);
+const page = usePage();
 
 const verdictClass: Record<VerdictValue, string> = {
     supported: 'bg-brand-soft text-brand-strong',
@@ -143,6 +147,23 @@ const assessmentLabel = {
                             · {{ assessmentLabel[evidence.assessment] }}
                         </template>
                     </p>
+                    <div
+                        class="mt-1.5 flex items-center justify-between gap-2 text-muted-foreground"
+                    >
+                        <span class="flex items-center gap-1"
+                            >Cited by <AuthorLink :author="evidence.author"
+                        /></span>
+                        <VoteControl
+                            size="xs"
+                            type="evidence"
+                            :id="evidence.id"
+                            :score="evidence.score"
+                            :my-vote="evidence.my_vote"
+                            :own="
+                                evidence.author.id === page.props.auth.user?.id
+                            "
+                        />
+                    </div>
                 </li>
             </ul>
 

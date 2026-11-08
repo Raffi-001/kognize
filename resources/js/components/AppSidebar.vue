@@ -7,6 +7,7 @@ import {
     ShieldCheck,
     ScanSearch,
     Settings,
+    Trophy,
     UserPlus,
 } from '@lucide/vue';
 import { computed } from 'vue';
@@ -27,6 +28,7 @@ import UsageCard from '@/components/UsageCard.vue';
 import { toUrl } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { index as invitations } from '@/routes/invitations';
+import { index as leaderboard } from '@/routes/leaderboard';
 import { index as polls } from '@/routes/polls';
 import { index as questions } from '@/routes/questions';
 import { index as submissions } from '@/routes/submissions';
@@ -102,6 +104,13 @@ const groups = computed<NavGroup[]>(() => [
                 keys: 'G Q',
                 badge: page.props.openPollsCount,
                 isActive: matches(polls().url),
+            },
+            {
+                title: 'Leaderboard',
+                href: leaderboard(),
+                icon: Trophy,
+                keys: 'G L',
+                isActive: matches(leaderboard().url),
             },
         ],
     },

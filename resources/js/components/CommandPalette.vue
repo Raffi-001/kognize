@@ -10,6 +10,7 @@ import {
     ScanSearch,
     Settings,
     Sun,
+    Trophy,
     UserPlus,
 } from '@lucide/vue';
 import { useEventListener } from '@vueuse/core';
@@ -27,6 +28,7 @@ import {
 import { useAppearance } from '@/composables/useAppearance';
 import { dashboard } from '@/routes';
 import { index as invitations } from '@/routes/invitations';
+import { index as leaderboard } from '@/routes/leaderboard';
 import { index as polls } from '@/routes/polls';
 import { index as questions } from '@/routes/questions';
 import { index as submissions, show } from '@/routes/submissions';
@@ -68,6 +70,12 @@ const destinations = [
         icon: MessagesSquare,
         url: polls().url,
         keys: 'G Q',
+    },
+    {
+        label: 'Leaderboard',
+        icon: Trophy,
+        url: leaderboard().url,
+        keys: 'G L',
     },
     {
         label: 'Invitations',
@@ -123,6 +131,7 @@ useEventListener(document, 'keydown', (event: KeyboardEvent) => {
             f: submissions({ query: { scope: 'community' } }).url,
             i: invitations().url,
             q: polls().url,
+            l: leaderboard().url,
         };
 
         if (sequence[event.key]) {

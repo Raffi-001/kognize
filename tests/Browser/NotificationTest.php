@@ -34,6 +34,7 @@ it('marks everything as read from the bell', function (): void {
     foreach (['Ani', 'Aram'] as $name) {
         resolve(CreateComment::class)->handle($note, User::factory()->create(['name' => $name]), 'Hi');
     }
+
     resolve(CreateComment::class)->handle(UserNote::factory()->for($owner)->create(), User::factory()->create(), 'Hey');
 
     $this->actingAs($owner);

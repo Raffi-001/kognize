@@ -10,6 +10,10 @@ use App\Http\Resources\AnalysisNoteResource;
 use App\Http\Resources\QuestionSummaryResource;
 use App\Http\Resources\SubmissionSourceResource;
 use App\Models\AnalysisNote;
+use App\Models\User;
+use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -48,11 +52,20 @@ final readonly class QuestionController
         ]);
     }
 
-    public function show(AnalysisNote $question): Response
+    public function show(AnalysisNote $question, #[CurrentUser] User $user): Response
     {
         abort_unless($question->question_kind === QuestionKind::Factual, 404);
 
-        $question->load(['analysis.submission', 'comments.user', 'evidence.user']);
+        $mine = fn (MorphMany $query) => $query->where('user_id', $user->id);
+
+        $question->load([
+            'analysis.submission',
+            'comments.user',
+            'comments.votes' => $mine,
+            'evidence' => fn (HasMany $query) => $query->reorder()->orderByDesc('score')->latest('id'),
+            'evidence.user',
+            'evidence.votes' => $mine,
+        ]);
 
         return Inertia::render('question/Show', [
             'question' => AnalysisNoteResource::make($question),

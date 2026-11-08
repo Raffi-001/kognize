@@ -29,6 +29,7 @@ final readonly class VerifyEvidence
         private QuoteLocator $quotes,
         private OpenAi $openAi,
         private NotifyActivity $notify,
+        private AwardBadges $badges,
     ) {}
 
     public function handle(Evidence $evidence): Evidence
@@ -44,6 +45,8 @@ final readonly class VerifyEvidence
             route('questions.show', $evidence->question),
             $evidence->verification->getLabel(),
         );
+
+        $this->badges->handle($evidence->user);
 
         return $evidence;
     }

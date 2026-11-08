@@ -33,6 +33,8 @@ final class EvidenceResource extends JsonResource
             'assessment' => $this->assessment,
             'assessment_reason' => $this->assessment_reason,
             'author' => UserSummaryResource::make($this->user),
+            'score' => $this->score,
+            'my_vote' => $this->voteOf($request->user()?->getAuthIdentifier()),
             'created_at_human' => $this->created_at->diffForHumans(),
         ];
     }

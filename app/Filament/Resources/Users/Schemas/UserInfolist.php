@@ -24,6 +24,8 @@ final class UserInfolist
                         TextEntry::make('name'),
                         TextEntry::make('email')
                             ->copyable(),
+                        TextEntry::make('reputation')
+                            ->numeric(),
                         TextEntry::make('plan')
                             ->badge(),
                         IconEntry::make('is_admin')
@@ -63,7 +65,7 @@ final class UserInfolist
                             ->state(fn (User $record): int => $record->submissions()->count()),
                         TextEntry::make('submissions_today')
                             ->label('Analyses today')
-                            ->state(fn (User $record): string => sprintf('%d of %d', $record->submissionsUsedToday(), $record->plan->dailySubmissions())),
+                            ->state(fn (User $record): string => sprintf('%d of %d', $record->submissionsUsedToday(), $record->dailySubmissionLimit())),
                     ]),
             ]);
     }

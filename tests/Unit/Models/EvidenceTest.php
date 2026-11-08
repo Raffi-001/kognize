@@ -28,6 +28,7 @@ test('to array', function (): void {
             'assessment_reason',
             'created_at',
             'updated_at',
+            'score',
         ]);
 });
 

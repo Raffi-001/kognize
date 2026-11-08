@@ -2,13 +2,18 @@
 
 declare(strict_types=1);
 
+use App\Actions\CastVote;
 use App\Actions\DeleteSubmission;
+use App\Enums\AnalysisType;
 use App\Models\AnalysisNote;
 use App\Models\Comment;
+use App\Models\Evidence;
 use App\Models\Report;
 use App\Models\Submission;
 use App\Models\SubmissionAnalysis;
+use App\Models\User;
 use App\Models\UserNote;
+use App\Models\Vote;
 
 it('deletes a submission with its findings, comments and reports', function (): void {
     $submission = Submission::factory()->create();
@@ -42,4 +47,27 @@ it('deletes a submission with its findings, comments and reports', function (): 
         ->and($otherComment->fresh())->not->toBeNull()
         ->and($otherReport->fresh())->not->toBeNull()
         ->and($otherNote->fresh())->not->toBeNull();
+});
+
+it('removes votes on the community notes, replies and sources of the submission', function (): void {
+    $submission = Submission::factory()->create();
+    $note = AnalysisNote::factory()->question()->create([
+        'submission_analysis_id' => SubmissionAnalysis::factory()->for($submission)->create(['type' => AnalysisType::Questions])->id,
+    ]);
+    $userNote = UserNote::factory()->for($submission)->create();
+    $comment = Comment::factory()->create(['commentable_type' => 'user_note', 'commentable_id' => $userNote->id]);
+    $evidence = Evidence::factory()->for($note, 'question')->create();
+    $elsewhere = UserNote::factory()->for($userNote->user)->create();
+    $voter = User::factory()->create();
+
+    foreach ([$userNote, $comment, $evidence, $elsewhere] as $votable) {
+        resolve(CastVote::class)->handle($voter, $votable, 1);
+    }
+
+    resolve(DeleteSubmission::class)->handle($submission);
+
+    expect(Vote::query()->sole()->votable_id)->toBe($elsewhere->id)
+        ->and($userNote->user->refresh()->reputation)->toBe(11)
+        ->and($evidence->user->refresh()->reputation)->toBe(1)
+        ->and($comment->user->refresh()->reputation)->toBe(1);
 });

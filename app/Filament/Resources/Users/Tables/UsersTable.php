@@ -29,6 +29,9 @@ final class UsersTable
                     ->copyable(),
                 TextColumn::make('plan')
                     ->badge(),
+                TextColumn::make('reputation')
+                    ->numeric()
+                    ->sortable(),
                 IconColumn::make('is_admin')
                     ->label('Admin')
                     ->boolean(),

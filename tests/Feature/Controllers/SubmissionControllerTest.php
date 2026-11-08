@@ -22,10 +22,12 @@ use App\Models\SubmissionAnalysis;
 use App\Models\UrlSubmission;
 use App\Models\User;
 use App\Models\UserNote;
+use App\Models\Vote;
 use App\Rules\ArmenianText;
 use Illuminate\Bus\PendingBatch;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Str;
+use Inertia\Testing\AssertableInertia;
 
 beforeEach(function (): void {
     $this->withoutVite();
@@ -149,7 +151,7 @@ it('lists the submissions of the user by default', function (): void {
             ->where('submissions.data.0.is_in_progress', false)
             ->where('submissions.data.0.counts', ['fallacy' => 2, 'rhetoric' => 0, 'questions' => 0])
             ->where('submissions.data.0.word_count', ArmenianText::wordCount($submission->body))
-            ->where('submissions.data.0.author', ['id' => $user->id, 'name' => 'Anna'])
+            ->where('submissions.data.0.author', ['id' => $user->id, 'name' => 'Anna', 'reputation' => 1])
             ->where('submissions.data.0.is_owner', true)
             ->has('submissions.data.0.excerpt')
             ->has('submissions.data.0.created_at')
@@ -320,7 +322,7 @@ it('renders a submission', function (): void {
             ->has('analyses.0.notes.0.comments', 1)
             ->where('analyses.0.notes.0.comments.0.id', $comment->id)
             ->where('analyses.0.notes.0.comments.0.text', 'Good point')
-            ->where('analyses.0.notes.0.comments.0.author', ['id' => $user->id, 'name' => $user->name])
+            ->where('analyses.0.notes.0.comments.0.author', ['id' => $user->id, 'name' => $user->name, 'reputation' => 1])
             ->where('analyses.0.notes.0.comments.0.is_owner', true)
             ->has('analyses.0.notes.0.comments.0.created_at_human')
             ->where('analyses.0.notes.0.question_kind', null)
@@ -331,7 +333,7 @@ it('renders a submission', function (): void {
             ->where('userNotes.0.annotation_id', $userNote->annotation_id)
             ->where('userNotes.0.label', 'Phrase')
             ->where('userNotes.0.text', 'My note')
-            ->where('userNotes.0.author', ['id' => $user->id, 'name' => $user->name])
+            ->where('userNotes.0.author', ['id' => $user->id, 'name' => $user->name, 'reputation' => 1])
             ->where('userNotes.0.is_owner', true)
             ->has('userNotes.0.created_at_human')
             ->where('userNotes.0.comments.0.text', 'Reply')
@@ -395,7 +397,22 @@ it('renders the argument map and the factual questions of a submission without i
             ->where('analyses.0.notes.0.evidence.1.verification', 'verified')
             ->where('analyses.0.notes.0.evidence.1.assessment', 'refutes')
             ->where('analyses.0.notes.0.evidence.1.assessment_reason', $evidence->assessment_reason)
-            ->where('analyses.0.notes.0.evidence.1.author', ['id' => $user->id, 'name' => 'Anna'])
+            ->where('analyses.0.notes.0.evidence.1.author', ['id' => $user->id, 'name' => 'Anna', 'reputation' => 1])
             ->has('analyses.0.notes.0.evidence.1.created_at_human'));
 
+});
+
+it('shows scores and how the viewer voted', function (): void {
+    $viewer = User::factory()->create();
+    $low = UserNote::factory()->create(['score' => 1]);
+    $high = UserNote::factory()->for($low->submission)->create(['score' => 9]);
+    Vote::factory()->for($viewer)->create(['votable_type' => 'user_note', 'votable_id' => $low->id, 'value' => -1]);
+
+    $this->actingAs($viewer)
+        ->get(route('submissions.show', $low->submission))
+        ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
+            ->where('userNotes.0.id', $high->id)
+            ->where('userNotes.0.my_vote', null)
+            ->where('userNotes.1.score', 1)
+            ->where('userNotes.1.my_vote', -1));
 });

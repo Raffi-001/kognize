@@ -2,6 +2,8 @@
 import { Link } from '@inertiajs/vue3';
 import { ArrowRight, BookOpen, Flag, MessageCircle } from '@lucide/vue';
 import { computed } from 'vue';
+import AuthorLink from '@/components/reputation/AuthorLink.vue';
+import VoteControl from '@/components/reputation/VoteControl.vue';
 import CommentThread from '@/components/submission/CommentThread.vue';
 import QuestionPanel from '@/components/submission/QuestionPanel.vue';
 import QuotedPassage from '@/components/submission/QuotedPassage.vue';
@@ -153,7 +155,11 @@ const canReport = computed(() => !isCommunity.value || !props.finding.isOwner);
             class="mt-1 text-sm leading-snug font-semibold"
             :lang="isCommunity ? undefined : 'hy'"
         >
-            {{ finding.title }}
+            <AuthorLink
+                v-if="isCommunity && finding.author"
+                :author="finding.author"
+            />
+            <template v-else>{{ finding.title }}</template>
             <span
                 v-if="isCommunity && finding.isOwner"
                 class="font-normal text-muted-foreground"
@@ -215,6 +221,15 @@ const canReport = computed(() => !isCommunity.value || !props.finding.isOwner);
             <span v-else />
 
             <span class="flex items-center gap-0.5">
+                <VoteControl
+                    v-if="isCommunity"
+                    class="relative mr-1"
+                    type="user_note"
+                    :id="finding.id"
+                    :score="finding.score"
+                    :my-vote="finding.myVote"
+                    :own="finding.isOwner"
+                />
                 <Button
                     v-if="active && wikiUrl"
                     as="a"

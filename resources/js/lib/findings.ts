@@ -57,6 +57,8 @@ export type Finding = {
     comments: Comment[];
     author: UserNote['author'] | null;
     isOwner: boolean;
+    score: number;
+    myVote: UserNote['my_vote'];
     createdAtHuman: string | null;
     isMinor: boolean;
     question: FindingQuestion | null;
@@ -165,6 +167,8 @@ export function buildFindings(
                 comments: note.comments,
                 author: null,
                 isOwner: false,
+                score: 0,
+                myVote: null,
                 createdAtHuman: null,
                 isMinor: isMinor(note, analysis.type),
                 question: questionOf(note),
@@ -190,6 +194,8 @@ export function buildFindings(
             comments: note.comments,
             author: note.author,
             isOwner: note.is_owner,
+            score: note.score,
+            myVote: note.my_vote,
             createdAtHuman: note.created_at_human,
             isMinor: false,
             question: null,

@@ -12,7 +12,10 @@ use Illuminate\Support\Str;
 
 final readonly class CreateUserNote
 {
-    public function __construct(private NotifyActivity $notify) {}
+    public function __construct(
+        private NotifyActivity $notify,
+        private AwardBadges $badges,
+    ) {}
 
     public function handle(Submission $submission, User $user, string $text, ?string $label = null): UserNote
     {
@@ -31,6 +34,8 @@ final readonly class CreateUserNote
             route('submissions.show', $submission),
             $note->text,
         );
+
+        $this->badges->handle($user);
 
         return $note;
     }

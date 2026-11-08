@@ -22,6 +22,7 @@ use Closure;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -105,17 +106,23 @@ final readonly class SubmissionController
         return to_route('dashboard', ['submission' => $submission->id]);
     }
 
-    public function show(Submission $submission): Response
+    public function show(Submission $submission, #[CurrentUser] User $user): Response
     {
+        $mine = fn (MorphMany $query) => $query->where('user_id', $user->id);
+
         $submission->load([
             'user',
             'analyses' => fn (HasMany $query) => $query->withCount(['notes' => $this->shownWithArticle()]),
             'analyses.notes' => $this->shownWithArticle(),
             'analyses.notes.comments.user',
+            'analyses.notes.comments.votes' => $mine,
             'analyses.notes.evidence.user',
-            'userNotes' => fn (HasMany $query) => $query->latest('id'),
+            'analyses.notes.evidence.votes' => $mine,
+            'userNotes' => fn (HasMany $query) => $query->orderByDesc('score')->latest('id'),
             'userNotes.user',
+            'userNotes.votes' => $mine,
             'userNotes.comments.user',
+            'userNotes.comments.votes' => $mine,
         ]);
 
         return Inertia::render('submission/Show', [

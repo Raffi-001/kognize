@@ -20,6 +20,7 @@ test('to array', function (): void {
             'text',
             'created_at',
             'updated_at',
+            'score',
         ]);
 });
 

@@ -37,7 +37,7 @@ it('notifies the author of the analyzed text', function (): void {
     resolve(CreateUserNote::class)->handle($submission, $user, 'Context');
     resolve(CreateUserNote::class)->handle($submission, $submission->user, 'My own note');
 
-    $notification = $submission->user->notifications()->sole();
+    $notification = $submission->user->notifications()->where('type', 'community_note_added')->sole();
 
     expect($notification->type)->toBe('community_note_added')
         ->and($notification->data['actors'])->toBe([['id' => $user->id, 'name' => $user->name]])

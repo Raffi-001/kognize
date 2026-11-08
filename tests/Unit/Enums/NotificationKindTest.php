@@ -28,6 +28,8 @@ it('writes a headline for every kind', function (NotificationKind $kind, string 
     [NotificationKind::EvidenceChecked, 'Your source for “Coffee ad” was checked'],
     [NotificationKind::QuestionResolved, '“Coffee ad” was resolved'],
     [NotificationKind::InviteeJoined, 'Ani joined with your invitation'],
+    [NotificationKind::BadgeEarned, 'You earned the “Coffee ad” badge'],
+    [NotificationKind::PrivilegeUnlocked, 'New privilege unlocked: Coffee ad'],
 ]);
 
 it('names the people involved', function (array $actors, string $headline): void {

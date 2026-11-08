@@ -1,5 +1,6 @@
 import type { LucideIcon } from '@lucide/vue';
 import {
+    Award,
     Bell,
     CircleAlert,
     CircleCheck,
@@ -7,6 +8,7 @@ import {
     Gavel,
     MessageCircle,
     MessagesSquare,
+    Unlock,
     UserPlus,
 } from '@lucide/vue';
 import type { NotificationKindValue } from '@/types';
@@ -47,6 +49,14 @@ export const notificationKinds: Record<
     invitee_joined: {
         icon: UserPlus,
         class: 'bg-rhetoric-soft text-rhetoric',
+    },
+    badge_earned: {
+        icon: Award,
+        class: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+    },
+    privilege_unlocked: {
+        icon: Unlock,
+        class: 'bg-brand-soft text-brand-strong',
     },
 };
 

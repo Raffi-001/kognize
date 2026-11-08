@@ -17,7 +17,12 @@ export type EthicsValue = 'neutral' | 'questionable' | 'unethical';
 export type UserSummary = {
     id: string;
     name: string;
+    reputation: number;
 };
+
+export type VotableType = 'user_note' | 'comment' | 'evidence';
+
+export type VoteValue = 1 | -1;
 
 export type SubmissionKindValue = 'argument' | 'informational' | 'personal';
 
@@ -51,6 +56,8 @@ export type Evidence = {
     assessment: EvidenceAssessmentValue | null;
     assessment_reason: string | null;
     author: UserSummary;
+    score: number;
+    my_vote: VoteValue | null;
     created_at_human: string;
 };
 
@@ -125,6 +132,8 @@ export type Comment = {
     id: number;
     text: string;
     author: UserSummary;
+    score: number;
+    my_vote: VoteValue | null;
     is_owner: boolean;
     created_at_human: string;
 };
@@ -161,6 +170,8 @@ export type UserNote = {
     label: string | null;
     text: string;
     author: UserSummary;
+    score: number;
+    my_vote: VoteValue | null;
     is_owner: boolean;
     created_at_human: string;
     comments: Comment[];
@@ -262,7 +273,9 @@ export type NotificationKindValue =
     | 'community_note_added'
     | 'evidence_checked'
     | 'question_resolved'
-    | 'invitee_joined';
+    | 'invitee_joined'
+    | 'badge_earned'
+    | 'privilege_unlocked';
 
 export type AppNotification = {
     id: string;

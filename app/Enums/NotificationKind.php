@@ -15,6 +15,8 @@ enum NotificationKind: string
     case EvidenceChecked = 'evidence_checked';
     case QuestionResolved = 'question_resolved';
     case InviteeJoined = 'invitee_joined';
+    case BadgeEarned = 'badge_earned';
+    case PrivilegeUnlocked = 'privilege_unlocked';
 
     /**
      * Turn a stored notification into the text people see.
@@ -51,6 +53,8 @@ enum NotificationKind: string
             self::EvidenceChecked => 'Evidence checks',
             self::QuestionResolved => 'Resolved questions',
             self::InviteeJoined => 'Invitations',
+            self::BadgeEarned => 'Badges',
+            self::PrivilegeUnlocked => 'Privileges',
         };
     }
 
@@ -64,6 +68,8 @@ enum NotificationKind: string
             self::EvidenceChecked => 'When a source you cited has been checked.',
             self::QuestionResolved => 'When a question you added evidence to is resolved.',
             self::InviteeJoined => 'When someone joins with your invitation code.',
+            self::BadgeEarned => 'When you earn a badge.',
+            self::PrivilegeUnlocked => 'When your reputation unlocks something new.',
         };
     }
 
@@ -98,6 +104,8 @@ enum NotificationKind: string
             self::EvidenceChecked => sprintf('Your source for “%s” was checked', $subject),
             self::QuestionResolved => sprintf('“%s” was resolved', $subject),
             self::InviteeJoined => sprintf('%s joined with your invitation', $who),
+            self::BadgeEarned => sprintf('You earned the “%s” badge', $subject),
+            self::PrivilegeUnlocked => sprintf('New privilege unlocked: %s', $subject),
         };
     }
 }

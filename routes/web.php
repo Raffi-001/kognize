@@ -5,10 +5,12 @@ declare(strict_types=1);
 use App\Http\Controllers\AnalysisNoteCommentController;
 use App\Http\Controllers\AnalysisNoteEvidenceController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationReadController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\PollVoteController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SessionController;
@@ -26,6 +28,7 @@ use App\Http\Controllers\UserPasskeyController;
 use App\Http\Controllers\UserPasswordController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UserTwoFactorAuthenticationController;
+use App\Http\Controllers\VoteController;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -81,6 +84,17 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('invitations', [InvitationController::class, 'store'])
         ->middleware('throttle:10,1')
         ->name('invitations.store');
+
+    // Votes...
+    Route::post('votes', [VoteController::class, 'store'])
+        ->middleware('throttle:60,1')
+        ->name('votes.store');
+
+    // Profiles...
+    Route::get('u/{user}', [ProfileController::class, 'show'])->name('profiles.show');
+
+    // Leaderboard...
+    Route::get('leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
 
     // Notifications...
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');

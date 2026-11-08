@@ -12,6 +12,8 @@ use App\Models\Evidence;
 use App\Models\Submission;
 use App\Models\SubmissionAnalysis;
 use App\Models\User;
+use App\Models\Vote;
+use Inertia\Testing\AssertableInertia;
 
 beforeEach(function (): void {
     $this->withoutVite();
@@ -132,7 +134,7 @@ it('renders the page of a factual question', function (): void {
             ->where('question.evidence.0.id', $evidence->id)
             ->where('question.evidence.0.verification', 'pending')
             ->where('question.comments.0.id', $comment->id)
-            ->where('question.comments.0.author', ['id' => $user->id, 'name' => 'Anna'])
+            ->where('question.comments.0.author', ['id' => $user->id, 'name' => 'Anna', 'reputation' => 1])
             ->where('source', ['id' => $submission->id, 'title' => 'Առաջին երկրորդ երրորդ', 'source_host' => null]));
 });
 
@@ -148,3 +150,18 @@ it('does not give value questions or other findings a page', function (?Question
     'value question' => [QuestionKind::Value],
     'finding' => [null],
 ]);
+
+it('lists the best sources first and shows how the viewer voted', function (): void {
+    $viewer = User::factory()->create();
+    $question = AnalysisNote::factory()->question()->create();
+    $first = Evidence::factory()->for($question, 'question')->create(['score' => 0]);
+    $best = Evidence::factory()->for($question, 'question')->create(['score' => 4]);
+    Vote::factory()->for($viewer)->create(['votable_type' => 'evidence', 'votable_id' => $best->id, 'value' => 1]);
+
+    $this->actingAs($viewer)
+        ->get(route('questions.show', $question))
+        ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
+            ->where('question.evidence.0.id', $best->id)
+            ->where('question.evidence.0.my_vote', 1)
+            ->where('question.evidence.1.id', $first->id));
+});
