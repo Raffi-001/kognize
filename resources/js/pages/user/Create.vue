@@ -18,13 +18,7 @@ import { login } from '@/routes';
 import { store } from '@/routes/register';
 
 defineOptions({
-    layout: [
-        AuthLayout,
-        {
-            title: 'Create an account',
-            description: 'Enter your details below to create your account',
-        },
-    ],
+    layout: AuthLayout,
 });
 
 const props = defineProps<{

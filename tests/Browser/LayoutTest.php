@@ -9,13 +9,14 @@ use Illuminate\Support\Facades\Password;
 it('renders auth pages inside the auth layout', function (): void {
     $page = visit(route('login'));
 
-    $page->assertSee('Log in to your account')
-        ->assertSee('Enter your email and password below to log in')
+    $page->assertDontSee('Log in to your account')
+        ->assertDontSee('Enter your email and password below to log in')
         ->assertSee('Sign in with a passkey')
         ->assertNoJavaScriptErrors();
 
     $page->click('Sign up')
-        ->assertSee('Create an account')
+        ->assertSee('Create account')
+        ->assertDontSee('Create an account')
         ->assertNoJavaScriptErrors();
 });
 

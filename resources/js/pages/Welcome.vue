@@ -3,9 +3,8 @@ import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight } from '@lucide/vue';
 import AppLogo from '@/components/AppLogo.vue';
 import { Button } from '@/components/ui/button';
-import { analysisTypes, aspects } from '@/lib/analysis';
+import InteractiveDemo from '@/components/welcome/InteractiveDemo.vue';
 import { dashboard, login, register } from '@/routes';
-import type { AnalysisTypeValue } from '@/types';
 
 withDefaults(
     defineProps<{
@@ -15,19 +14,6 @@ withDefaults(
         canRegister: true,
     },
 );
-
-const preview: { text: string; type: AnalysisTypeValue | null }[] = [
-    { text: 'Եթե դու համաձայն չես կառավարության հետ, ', type: null },
-    { text: 'ուրեմն դու հայրենիքի թշնամի ես', type: 'fallacy' },
-    { text: '։ ', type: null },
-    { text: 'Բոլորը գիտեն', type: 'questions' },
-    {
-        text: ', որ ընդդիմությունը վճարվում է արտասահմանից։ Մենք կամ պետք է ընդունենք այս բարեփոխումները հիմա, ',
-        type: null,
-    },
-    { text: 'կամ էլ մեր երկիրը կկործանվի', type: 'rhetoric' },
-    { text: '։', type: null },
-];
 </script>
 
 <template>
@@ -64,7 +50,7 @@ const preview: { text: string; type: AnalysisTypeValue | null }[] = [
                     class="inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur"
                 >
                     <span class="size-1.5 rounded-full bg-primary" />
-                    Critical reading for Armenian public discourse
+                    Kognize · critical reading for Armenian texts
                 </p>
                 <h1
                     class="mt-6 font-display text-5xl leading-[1.02] tracking-tight text-balance sm:text-7xl"
@@ -75,9 +61,9 @@ const preview: { text: string; type: AnalysisTypeValue | null }[] = [
                 <p
                     class="mx-auto mt-6 max-w-xl text-lg text-pretty text-muted-foreground"
                 >
-                    Paste a speech, a post or an article link.
-                    {{ $page.props.name }} highlights logical fallacies and
-                    rhetorical devices, and suggests the questions worth asking.
+                    Paste an article link, a post or an ad. Kognize maps how the
+                    text argues: the reasoning gaps, the rhetoric and the
+                    questions worth asking, so you can judge it yourself.
                 </p>
                 <div
                     class="mt-8 flex flex-wrap items-center justify-center gap-3"
@@ -103,62 +89,14 @@ const preview: { text: string; type: AnalysisTypeValue | null }[] = [
                 </div>
             </section>
 
-            <section
-                class="mx-auto mt-16 max-w-4xl overflow-hidden rounded-xl bg-card shadow-[0_1px_2px_rgba(0,0,0,0.04),0_24px_48px_-24px_rgba(0,0,0,0.18)]"
-                aria-label="Example analysis"
-            >
-                <div class="flex items-center gap-1.5 bg-surface px-4 py-3">
-                    <span
-                        v-for="dot in 3"
-                        :key="dot"
-                        class="size-2.5 rounded-full bg-muted-foreground/20"
-                    />
-                </div>
-                <div
-                    class="grid gap-6 p-6 md:grid-cols-[minmax(0,1fr)_16rem] md:p-8"
-                >
-                    <p lang="hy" class="reading-prose text-left">
-                        <template v-for="(part, index) in preview" :key="index">
-                            <mark
-                                v-if="part.type"
-                                class="finding-mark"
-                                :data-type="part.type"
-                                >{{ part.text }}</mark
-                            >
-                            <template v-else>{{ part.text }}</template>
-                        </template>
-                    </p>
-                    <ul class="grid content-start gap-2 text-left">
-                        <li
-                            v-for="type in analysisTypes"
-                            :key="type"
-                            class="flex items-start gap-3 rounded-lg bg-surface p-3"
-                        >
-                            <span
-                                class="flex size-8 shrink-0 items-center justify-center rounded-lg"
-                                :class="[
-                                    aspects[type].softClass,
-                                    aspects[type].textClass,
-                                ]"
-                            >
-                                <component
-                                    :is="aspects[type].icon"
-                                    class="size-4"
-                                />
-                            </span>
-                            <span>
-                                <span class="block text-sm font-medium">{{
-                                    aspects[type].label
-                                }}</span>
-                                <span
-                                    class="block text-xs text-muted-foreground"
-                                    >{{ aspects[type].description }}</span
-                                >
-                            </span>
-                        </li>
-                    </ul>
-                </div>
-            </section>
+            <InteractiveDemo />
         </main>
+
+        <footer
+            class="mx-auto flex w-full max-w-6xl items-center justify-between border-t px-6 py-6 text-xs text-muted-foreground"
+        >
+            <span>© {{ new Date().getFullYear() }} Kognize</span>
+            <span>kognize.me</span>
+        </footer>
     </div>
 </template>

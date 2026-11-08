@@ -21,9 +21,12 @@ defineProps<{
                         class="flex flex-col items-center gap-2 font-medium"
                     >
                         <AppLogo size="lg" />
-                        <span class="sr-only">{{ title }}</span>
+                        <span class="sr-only">{{ title ?? 'Home' }}</span>
                     </Link>
-                    <div class="space-y-2 text-center">
+                    <div
+                        v-if="title || description"
+                        class="space-y-2 text-center"
+                    >
                         <h1 class="font-display text-3xl tracking-tight">
                             {{ title }}
                         </h1>
