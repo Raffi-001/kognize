@@ -68,23 +68,28 @@ withDefaults(
                 <div
                     class="mt-8 flex flex-wrap items-center justify-center gap-3"
                 >
-                    <Button size="lg" as-child>
-                        <Link
-                            :href="
-                                $page.props.auth.user ? dashboard() : login()
-                            "
-                        >
-                            Start analyzing
-                            <ArrowRight />
-                        </Link>
-                    </Button>
                     <Button
-                        v-if="canRegister && !$page.props.auth.user"
                         size="lg"
-                        variant="outline"
+                        class="h-14 rounded-lg px-8 text-lg"
                         as-child
                     >
-                        <Link :href="register()">Redeem an invitation</Link>
+                        <Link
+                            :href="
+                                $page.props.auth.user
+                                    ? dashboard()
+                                    : canRegister
+                                      ? register()
+                                      : login()
+                            "
+                            data-test="hero-cta"
+                        >
+                            {{
+                                $page.props.auth.user
+                                    ? 'Start analyzing'
+                                    : 'Redeem an Invitation'
+                            }}
+                            <ArrowRight class="size-5" />
+                        </Link>
                     </Button>
                 </div>
             </section>

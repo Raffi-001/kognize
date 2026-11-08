@@ -7,6 +7,10 @@ it('has welcome page', function (): void {
 
     $page->assertSee('Read between the')
         ->assertSee('Kognize')
+        ->assertDontSee('Start analyzing')
+        ->assertSeeIn('@hero-cta', 'Redeem an Invitation')
+        ->click('@hero-cta')
+        ->assertPathIs('/register')
         ->assertNoJavaScriptErrors();
 });
 
