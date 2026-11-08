@@ -40,7 +40,7 @@ const findings: DemoFinding[] = [
 ];
 
 const parts: { text: string; finding: number | null }[] = [
-    { text: 'Եթե «Արևիկի» սուրճը քեզ դուր չի գալիս, ', finding: null },
+    { text: 'Եթե մեր սուրճը քեզ դուր չի գալիս, ', finding: null },
     { text: 'ուրեմն դու երբեք իսկական սուրճ չես խմել', finding: 0 },
     { text: '։ ', finding: null },
     { text: 'Բոլոր բարիստաները գիտեն', finding: 1 },
@@ -84,7 +84,7 @@ function select(index: number): void {
             </span>
             <span
                 class="mx-auto truncate rounded-md bg-background px-3 py-1 text-xs text-muted-foreground"
-                >kognize.me/analyses/arevik-coffee</span
+                >kognize.me/analyses/coffee-ad</span
             >
         </div>
 

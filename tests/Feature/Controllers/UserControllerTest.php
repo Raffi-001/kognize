@@ -281,3 +281,35 @@ it('requires verified email to delete account', function (): void {
 
     expect($user->fresh())->not->toBeNull();
 });
+
+it('accepts an open invitation code for any email and records the referrer', function (): void {
+    config(['kognize.invite_only' => true]);
+
+    $inviter = User::factory()->create();
+    $invitation = Invitation::factory()->for($inviter, 'inviter')->create(['email' => null, 'code' => '24680']);
+
+    $this->post(route('register.store'), [
+        'name' => 'Open Code User',
+        'email' => 'opencode@example.com',
+        'password' => 'password1234',
+        'password_confirmation' => 'password1234',
+        'invitation_code' => '24680',
+    ])->assertRedirect(route('dashboard', absolute: false));
+
+    $user = User::query()->where('email', 'opencode@example.com')->sole();
+
+    expect($user->referrer_id)->toBe($inviter->id)
+        ->and($invitation->refresh()->invitee_id)->toBe($user->id);
+
+    $this->post(route('logout'));
+
+    $this->post(route('register.store'), [
+        'name' => 'Second User',
+        'email' => 'second@example.com',
+        'password' => 'password1234',
+        'password_confirmation' => 'password1234',
+        'invitation_code' => '24680',
+    ])->assertSessionHasErrors(['invitation_code' => 'This invitation code is invalid or has already been used.']);
+
+    expect(User::query()->where('email', 'second@example.com')->exists())->toBeFalse();
+});

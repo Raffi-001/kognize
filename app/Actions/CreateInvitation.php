@@ -11,14 +11,20 @@ use Illuminate\Support\Facades\Mail;
 
 final readonly class CreateInvitation
 {
-    public function handle(User $inviter, string $email): Invitation
+    /**
+     * Create a single-use code. With an email address the code is mailed and
+     * only works for that address; without one it is an open code to hand out.
+     */
+    public function handle(User $inviter, ?string $email = null): Invitation
     {
         $invitation = $inviter->invitations()->create([
             'code' => $this->generateCode(),
-            'email' => mb_strtolower($email),
+            'email' => $email === null ? null : mb_strtolower($email),
         ]);
 
-        Mail::to($invitation->email)->send(new InvitationMail($invitation, $inviter));
+        if ($invitation->email !== null) {
+            Mail::to($invitation->email)->send(new InvitationMail($invitation, $inviter));
+        }
 
         return $invitation;
     }

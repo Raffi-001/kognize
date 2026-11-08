@@ -24,7 +24,18 @@ test('to array', function (): void {
             'updated_at',
             'plan',
             'is_admin',
+            'referrer_id',
         ]);
+});
+
+it('knows who referred it and whom it referred', function (): void {
+    $referrer = User::factory()->create();
+    $referees = User::factory()->count(2)->create(['referrer_id' => $referrer->id]);
+
+    expect($referees[0]->referrer->is($referrer))->toBeTrue()
+        ->and($referrer->referees->pluck('id')->sort()->values()->all())
+        ->toBe($referees->pluck('id')->sort()->values()->all())
+        ->and($referrer->referrer)->toBeNull();
 });
 
 it('defaults to the standard plan and no admin rights', function (): void {

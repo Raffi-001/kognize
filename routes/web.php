@@ -114,6 +114,7 @@ Route::middleware('guest')->group(function (): void {
     Route::get('register', [UserController::class, 'create'])
         ->name('register');
     Route::post('register', [UserController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('register.store');
 
     // User Password...

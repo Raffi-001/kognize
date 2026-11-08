@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -30,6 +31,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read string $password
  * @property-read Plan $plan
  * @property-read bool $is_admin
+ * @property-read string|null $referrer_id
  * @property-read string|null $remember_token
  * @property-read string|null $two_factor_secret
  * @property-read string|null $two_factor_recovery_codes
@@ -38,6 +40,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read CarbonInterface $updated_at
  * @property-read Collection<int, Submission> $submissions
  * @property-read Collection<int, Invitation> $invitations
+ * @property-read User|null $referrer
+ * @property-read Collection<int, User> $referees
  * @property-read Collection<int, UrlSubmission> $urlSubmissions
  */
 #[Hidden([
@@ -62,6 +66,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     protected $attributes = [
         'plan' => 'standard',
         'is_admin' => false,
+        'referrer_id' => null,
     ];
 
     /**
@@ -77,6 +82,7 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'password' => 'hashed',
             'plan' => Plan::class,
             'is_admin' => 'boolean',
+            'referrer_id' => 'string',
             'remember_token' => 'string',
             'two_factor_secret' => 'string',
             'two_factor_recovery_codes' => 'string',
@@ -100,6 +106,26 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function invitations(): HasMany
     {
         return $this->hasMany(Invitation::class, 'inviter_id');
+    }
+
+    /**
+     * The user whose invitation code this user signed up with.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function referrer(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'referrer_id');
+    }
+
+    /**
+     * Users who signed up with one of this user's invitation codes.
+     *
+     * @return HasMany<User, $this>
+     */
+    public function referees(): HasMany
+    {
+        return $this->hasMany(self::class, 'referrer_id');
     }
 
     /**

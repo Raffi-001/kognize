@@ -34,3 +34,17 @@ it('generates unique codes', function (): void {
 
     expect($codes->unique())->toHaveCount(20);
 });
+
+it('creates open codes without sending mail', function (): void {
+    Mail::fake();
+
+    $inviter = User::factory()->create();
+
+    $invitation = resolve(CreateInvitation::class)->handle($inviter);
+
+    expect($invitation->email)->toBeNull()
+        ->and($invitation->isOpen())->toBeTrue()
+        ->and($invitation->code)->toMatch('/^\d{5}$/');
+
+    Mail::assertNothingQueued();
+});

@@ -43,9 +43,13 @@ final class ValidInvitationCode implements DataAwareRule, ValidationRule
             return;
         }
 
+        if ($invitation->isOpen()) {
+            return;
+        }
+
         $email = $this->data['email'] ?? null;
 
-        if (! is_string($email) || mb_strtolower($invitation->email) !== mb_strtolower($email)) {
+        if (! is_string($email) || mb_strtolower((string) $invitation->email) !== mb_strtolower($email)) {
             $fail('This invitation code was issued for a different email address.');
         }
     }

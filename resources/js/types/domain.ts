@@ -178,7 +178,7 @@ export type SubmissionProgress = {
 
 export type Invitation = {
     id: number;
-    email: string;
+    email: string | null;
     code: string;
     is_used: boolean;
     invitee: UserSummary | null;

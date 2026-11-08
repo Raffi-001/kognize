@@ -136,7 +136,7 @@ const meter = computed(() => page.props.auth.usage?.invitations);
                     >
                         <div class="min-w-0 flex-1">
                             <p class="truncate text-sm font-medium">
-                                {{ invitation.email }}
+                                {{ invitation.email ?? 'Open code' }}
                             </p>
                             <p class="text-xs text-muted-foreground">
                                 Sent {{ invitation.created_at_human }}

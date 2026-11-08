@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property-read int $id
  * @property-read string $code
- * @property-read string $email
+ * @property-read string|null $email
  * @property-read string $inviter_id
  * @property-read string|null $invitee_id
  * @property-read CarbonInterface|null $used_at
@@ -31,6 +31,7 @@ final class Invitation extends Model
      * @var array<string, mixed>
      */
     protected $attributes = [
+        'email' => null,
         'invitee_id' => null,
         'used_at' => null,
     ];
@@ -50,6 +51,14 @@ final class Invitation extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Open codes are not tied to an email address and work for anyone, once.
+     */
+    public function isOpen(): bool
+    {
+        return $this->email === null;
     }
 
     /**
