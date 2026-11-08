@@ -13,6 +13,6 @@
 @endforeach
 
 @endforeach
-Thanks,<br>
+Շնորհակալություն,<br>
 {{ config('app.name') }}
 </x-mail::message>

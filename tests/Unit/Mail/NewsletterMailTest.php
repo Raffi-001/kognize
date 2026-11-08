@@ -23,7 +23,7 @@ it('lists the selected submissions, polls and open questions', function (): void
     new NewsletterMail($newsletter, User::factory()->create())
         ->assertHasSubject('This week')
         ->assertSeeInHtml('Here is what is new.')
-        ->assertSeeInOrderInHtml(['Submissions', 'Coffee [ad]', 'Polls', 'Should voting be compulsory?', 'Open Questions', 'Who measured it?', 'Which baristas?'])
+        ->assertSeeInOrderInHtml(['Վերլուծություններ', 'Coffee [ad]', 'Հարցումներ', 'Should voting be compulsory?', 'Բաց հարցեր', 'Who measured it?', 'Which baristas?'])
         ->assertSeeInHtml(route('submissions.show', $submission), false)
         ->assertSeeInHtml(route('polls.index'), false)
         ->assertSeeInHtml(route('questions.show', $question), false);
@@ -34,7 +34,7 @@ it('leaves out categories with nothing selected', function (): void {
     $newsletter->polls()->attach(Poll::factory()->published()->create());
 
     new NewsletterMail($newsletter, User::factory()->create())
-        ->assertSeeInHtml('Polls')
-        ->assertDontSeeInHtml('Submissions')
-        ->assertDontSeeInHtml('Open Questions');
+        ->assertSeeInHtml('Հարցումներ')
+        ->assertDontSeeInHtml('Վերլուծություններ')
+        ->assertDontSeeInHtml('Բաց հարցեր');
 });

@@ -36,15 +36,15 @@ final class NewsletterMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         $sections = [
-            'Submissions' => $this->newsletter->submissions()->get()->map(fn (Submission $submission): array => [
+            'Վերլուծություններ' => $this->newsletter->submissions()->get()->map(fn (Submission $submission): array => [
                 'title' => $this->escape($submission->displayTitle()),
                 'url' => route('submissions.show', $submission),
             ]),
-            'Polls' => $this->newsletter->polls()->get()->map(fn (Poll $poll): array => [
+            'Հարցումներ' => $this->newsletter->polls()->get()->map(fn (Poll $poll): array => [
                 'title' => $this->escape($poll->question),
                 'url' => route('polls.index'),
             ]),
-            'Open Questions' => $this->newsletter->questions()->get()->map(fn (AnalysisNote $question): array => [
+            'Բաց հարցեր' => $this->newsletter->questions()->get()->map(fn (AnalysisNote $question): array => [
                 'title' => $this->escape($question->aspect_label ?? $question->text),
                 'url' => route('questions.show', $question),
             ]),
