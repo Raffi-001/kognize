@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\NotificationKind;
 use App\Enums\Plan;
 use App\Enums\UrlSubmissionStatus;
 use App\Models\Invitation;
@@ -25,6 +26,8 @@ test('to array', function (): void {
             'plan',
             'is_admin',
             'referrer_id',
+            'muted_notifications',
+            'notification_digest',
         ]);
 });
 
@@ -106,4 +109,12 @@ it('calculates the remaining invitations', function (): void {
     Invitation::factory()->for($user, 'inviter')->count(Plan::Pro->invitations())->create();
 
     expect($user->remainingInvitations())->toBe(0);
+});
+
+it('wants every notification it has not muted', function (): void {
+    $user = User::factory()->make(['muted_notifications' => ['comment_posted']]);
+
+    expect($user->wantsNotification(NotificationKind::CommentPosted))->toBeFalse()
+        ->and($user->wantsNotification(NotificationKind::EvidenceChecked))->toBeTrue()
+        ->and(User::factory()->make()->wantsNotification(NotificationKind::CommentPosted))->toBeTrue();
 });

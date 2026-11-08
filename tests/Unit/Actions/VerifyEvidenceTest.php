@@ -126,3 +126,15 @@ it('leaves the assessment empty when the model request fails', function () use (
 
     Exceptions::assertReported(RequestException::class);
 });
+
+it('tells the person who cited the source how the check went', function () use ($quote): void {
+    Http::fake(['https://example.com/report' => Http::response('<p>Nothing relevant</p>')]);
+
+    $evidence = resolve(VerifyEvidence::class)->handle(citedEvidence($quote));
+
+    $notification = $evidence->user->notifications()->sole();
+
+    expect($notification->type)->toBe('evidence_checked')
+        ->and($notification->data['subject'])->toBe(['type' => 'analysis_note', 'id' => $evidence->question->id, 'title' => 'Արդյո՞ք ծախսերն աճել են։'])
+        ->and($notification->data['excerpt'])->toBe('Quote not found');
+});

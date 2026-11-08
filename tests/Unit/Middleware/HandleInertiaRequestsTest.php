@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\NotificationKind;
 use App\Enums\Plan;
 use App\Enums\QuestionKind;
 use App\Enums\QuestionStatus;
@@ -13,7 +14,9 @@ use App\Models\Poll;
 use App\Models\PollVote;
 use App\Models\Submission;
 use App\Models\User;
+use App\Notifications\ActivityNotification;
 use Illuminate\Http\Request;
+use Inertia\OptionalProp;
 
 it('shares app name from config', function (): void {
     $middleware = new HandleInertiaRequests();
@@ -225,3 +228,35 @@ it('shares the admin url with admins only', function (bool $isAdmin): void {
     'admin' => [true],
     'user' => [false],
 ]);
+
+it('shares no notifications for guests', function (): void {
+    $shared = new HandleInertiaRequests()->share(Request::create('/', 'GET'));
+
+    expect($shared['unreadNotificationsCount'])->toBe(0)
+        ->and($shared['latestNotifications']())->toBe([]);
+});
+
+it('shares the unread count and the latest notifications on request', function (): void {
+    $user = User::factory()->create();
+    $notification = new ActivityNotification(
+        NotificationKind::AnalysisCompleted,
+        null,
+        ['type' => 'submission', 'id' => 1, 'title' => 'Coffee ad'],
+        'https://kognize.test',
+    );
+    foreach (range(1, 10) as $ignored) {
+        $user->notify($notification);
+    }
+
+    $user->notifications()->first()?->markAsRead();
+
+    $request = Request::create('/', 'GET');
+    $request->setUserResolver(fn () => $user);
+
+    $shared = new HandleInertiaRequests()->share($request);
+
+    expect($shared['unreadNotificationsCount']())->toBe(9)
+        ->and($shared['latestNotifications'])->toBeInstanceOf(OptionalProp::class)
+        ->and($shared['latestNotifications']())->toHaveCount(8)
+        ->and($shared['latestNotifications']()[0]['headline'])->toBe('Your analysis of “Coffee ad” is ready');
+});

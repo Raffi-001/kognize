@@ -1,6 +1,6 @@
 import type { Directive } from 'vue';
 import type { Auth } from '@/types/auth';
-import type { SubmissionStateValue } from '@/types/domain';
+import type { AppNotification, SubmissionStateValue } from '@/types/domain';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -22,6 +22,8 @@ declare module '@inertiajs/core' {
             auth: Auth;
             openPollsCount: number;
             openQuestionsCount: number;
+            unreadNotificationsCount: number;
+            latestNotifications?: AppNotification[];
             adminUrl: string | null;
             recentSubmissions: {
                 id: number;

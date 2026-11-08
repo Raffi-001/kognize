@@ -4,6 +4,7 @@ import { Plus, Search } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
 import CommandPalette from '@/components/CommandPalette.vue';
+import NotificationBell from '@/components/notification/NotificationBell.vue';
 import { Button } from '@/components/ui/button';
 import { Kbd } from '@/components/ui/kbd';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -84,6 +85,8 @@ const remainingRatio = computed(() => {
                     {{ usage.submissions.limit }} daily analyses used
                 </TooltipContent>
             </Tooltip>
+
+            <NotificationBell />
 
             <Button v-if="!isDashboard" as-child size="sm">
                 <Link :href="dashboard()">

@@ -6,6 +6,7 @@ namespace App\Actions;
 
 use App\Enums\EvidenceAssessment;
 use App\Enums\EvidenceVerification;
+use App\Enums\NotificationKind;
 use App\Models\Evidence;
 use App\Services\OpenAi;
 use App\Services\QuoteLocator;
@@ -27,9 +28,27 @@ final readonly class VerifyEvidence
     public function __construct(
         private QuoteLocator $quotes,
         private OpenAi $openAi,
+        private NotifyActivity $notify,
     ) {}
 
     public function handle(Evidence $evidence): Evidence
+    {
+        $this->verify($evidence);
+
+        $evidence->loadMissing('question', 'user');
+        $this->notify->handle(
+            [$evidence->user],
+            NotificationKind::EvidenceChecked,
+            null,
+            ['type' => 'analysis_note', 'id' => $evidence->question->id, 'title' => $evidence->question->aspect_label ?? $evidence->question->text],
+            route('questions.show', $evidence->question),
+            $evidence->verification->getLabel(),
+        );
+
+        return $evidence;
+    }
+
+    private function verify(Evidence $evidence): void
     {
         try {
             $html = Http::withHeaders(['Accept' => 'text/html,application/xhtml+xml'])
@@ -40,7 +59,7 @@ final readonly class VerifyEvidence
         } catch (ConnectionException|RequestException) {
             $evidence->update(['verification' => EvidenceVerification::Unreachable]);
 
-            return $evidence;
+            return;
         }
 
         $text = $this->text($html);
@@ -52,7 +71,7 @@ final readonly class VerifyEvidence
         if ($location === null) {
             $evidence->update(['verification' => EvidenceVerification::NotFound, 'page_title' => $title]);
 
-            return $evidence;
+            return;
         }
 
         $start = max(0, $location['offset'] - self::CONTEXT);
@@ -65,8 +84,6 @@ final readonly class VerifyEvidence
         ]);
 
         $this->assess($evidence, $snapshot);
-
-        return $evidence;
     }
 
     private function assess(Evidence $evidence, string $snapshot): void

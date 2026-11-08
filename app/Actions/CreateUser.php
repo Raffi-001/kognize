@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
+use App\Enums\NotificationKind;
 use App\Models\Invitation;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -13,6 +14,8 @@ use SensitiveParameter;
 
 final readonly class CreateUser
 {
+    public function __construct(private NotifyActivity $notify) {}
+
     /**
      * Create the account and, when a code is given, redeem it: each code works
      * once, and the user who created it becomes the new user's referrer.
@@ -44,6 +47,14 @@ final readonly class CreateUser
                     'invitation_code' => 'This invitation code is invalid or has already been used.',
                 ]));
             }
+
+            $this->notify->handle(
+                [$user->referrer],
+                NotificationKind::InviteeJoined,
+                $user,
+                ['type' => 'user', 'id' => $user->id, 'title' => $user->name],
+                route('invitations.index'),
+            );
 
             event(new Registered($user));
 

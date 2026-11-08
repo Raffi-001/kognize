@@ -38,3 +38,19 @@ it('marks the submission as failed when there are no analyses', function (): voi
 
     expect($submission->refresh()->state)->toBe(SubmissionState::Failed);
 });
+
+it('tells the author whether the analysis is ready', function (AnalysisStatus $status, string $kind): void {
+    $submission = Submission::factory()->processing()->create(['title' => 'Coffee ad']);
+    SubmissionAnalysis::factory()->for($submission)->create(['status' => $status]);
+
+    resolve(FinalizeSubmissionAnalysis::class)->handle($submission);
+
+    $notification = $submission->user->notifications()->sole();
+
+    expect($notification->type)->toBe($kind)
+        ->and($notification->data['subject'])->toBe(['type' => 'submission', 'id' => $submission->id, 'title' => 'Coffee ad'])
+        ->and($notification->data['actors'])->toBe([]);
+})->with([
+    [AnalysisStatus::Completed, 'analysis_completed'],
+    [AnalysisStatus::Failed, 'analysis_failed'],
+]);

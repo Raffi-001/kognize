@@ -254,3 +254,28 @@ export type QuestionSummary = {
     created_at_human: string;
     resolved_at_human: string | null;
 };
+
+export type NotificationKindValue =
+    | 'analysis_completed'
+    | 'analysis_failed'
+    | 'comment_posted'
+    | 'community_note_added'
+    | 'evidence_checked'
+    | 'question_resolved'
+    | 'invitee_joined';
+
+export type AppNotification = {
+    id: string;
+    kind: NotificationKindValue | null;
+    headline: string;
+    excerpt: string | null;
+    actors: string[];
+    is_read: boolean;
+    created_at_human: string | null;
+};
+
+export type NotificationKindOption = {
+    value: NotificationKindValue;
+    label: string;
+    description: string;
+};

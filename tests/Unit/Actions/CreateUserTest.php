@@ -82,3 +82,18 @@ it('creates users without a referrer when no code is given', function (): void {
 
     expect($user->referrer_id)->toBeNull();
 });
+
+it('tells the referrer that their invitee joined', function (): void {
+    Event::fake([Registered::class]);
+
+    $inviter = User::factory()->create();
+    Invitation::factory()->for($inviter, 'inviter')->create(['code' => '54321', 'email' => null]);
+
+    $user = resolve(CreateUser::class)->handle(['name' => 'Lilit', 'email' => 'lilit@example.com'], 'password', '54321');
+
+    $notification = $inviter->notifications()->sole();
+
+    expect($notification->type)->toBe('invitee_joined')
+        ->and($notification->data['actors'])->toBe([['id' => $user->id, 'name' => 'Lilit']])
+        ->and($notification->data['url'])->toBe(route('invitations.index'));
+});

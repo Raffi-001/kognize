@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Str;
 
 /**
  * @property-read int $id
@@ -111,5 +112,13 @@ final class Submission extends Model
     public function reports(): MorphMany
     {
         return $this->morphMany(Report::class, 'reportable');
+    }
+
+    /**
+     * The title, or the opening words of the text when there is none.
+     */
+    public function displayTitle(): string
+    {
+        return $this->title ?? Str::words(Str::squish($this->body), 8);
     }
 }

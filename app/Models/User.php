@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\NotificationKind;
 use App\Enums\Plan;
 use App\Enums\UrlSubmissionStatus;
 use Carbon\CarbonInterface;
@@ -32,6 +33,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read Plan $plan
  * @property-read bool $is_admin
  * @property-read string|null $referrer_id
+ * @property-read list<string>|null $muted_notifications
+ * @property-read bool $notification_digest
  * @property-read string|null $remember_token
  * @property-read string|null $two_factor_secret
  * @property-read string|null $two_factor_recovery_codes
@@ -67,6 +70,8 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
         'plan' => 'standard',
         'is_admin' => false,
         'referrer_id' => null,
+        'muted_notifications' => null,
+        'notification_digest' => false,
     ];
 
     /**
@@ -83,6 +88,8 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
             'plan' => Plan::class,
             'is_admin' => 'boolean',
             'referrer_id' => 'string',
+            'muted_notifications' => 'array',
+            'notification_digest' => 'boolean',
             'remember_token' => 'string',
             'two_factor_secret' => 'string',
             'two_factor_recovery_codes' => 'string',
@@ -134,6 +141,11 @@ final class User extends Authenticatable implements FilamentUser, MustVerifyEmai
     public function urlSubmissions(): HasMany
     {
         return $this->hasMany(UrlSubmission::class);
+    }
+
+    public function wantsNotification(NotificationKind $kind): bool
+    {
+        return ! in_array($kind->value, $this->muted_notifications ?? [], true);
     }
 
     public function submissionsUsedToday(): int

@@ -66,3 +66,9 @@ it('has analyses, user notes and reports', function (): void {
         ->and($submission->userNotes->sole()->is($note))->toBeTrue()
         ->and($submission->reports->sole()->is($report))->toBeTrue();
 });
+
+it('falls back to the opening words when it has no title', function (): void {
+    expect(Submission::factory()->make(['title' => 'Coffee ad'])->displayTitle())->toBe('Coffee ad')
+        ->and(Submission::factory()->make(['title' => null, 'body' => "Մեկ  երկու\nերեք չորս հինգ վեց յոթ ութ ինը"])->displayTitle())
+        ->toBe('Մեկ երկու երեք չորս հինգ վեց յոթ ութ...');
+});

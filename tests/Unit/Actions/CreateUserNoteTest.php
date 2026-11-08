@@ -29,3 +29,17 @@ it('stores an empty label as null', function (?string $label): void {
 
     expect($note->refresh()->label)->toBeNull();
 })->with([null, '   ']);
+
+it('notifies the author of the analyzed text', function (): void {
+    $submission = Submission::factory()->create();
+    $user = User::factory()->create();
+
+    resolve(CreateUserNote::class)->handle($submission, $user, 'Context');
+    resolve(CreateUserNote::class)->handle($submission, $submission->user, 'My own note');
+
+    $notification = $submission->user->notifications()->sole();
+
+    expect($notification->type)->toBe('community_note_added')
+        ->and($notification->data['actors'])->toBe([['id' => $user->id, 'name' => $user->name]])
+        ->and($notification->data['excerpt'])->toBe('Context');
+});

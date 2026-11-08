@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Http\Controllers\AnalysisNoteCommentController;
 use App\Http\Controllers\AnalysisNoteEvidenceController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationReadController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\PollVoteController;
 use App\Http\Controllers\QuestionController;
@@ -19,6 +21,7 @@ use App\Http\Controllers\UserEmailVerificationController;
 use App\Http\Controllers\UserEmailVerificationNotificationController;
 use App\Http\Controllers\UserNoteCommentController;
 use App\Http\Controllers\UserNoteController;
+use App\Http\Controllers\UserNotificationPreferenceController;
 use App\Http\Controllers\UserPasskeyController;
 use App\Http\Controllers\UserPasswordController;
 use App\Http\Controllers\UserProfileController;
@@ -78,6 +81,11 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::post('invitations', [InvitationController::class, 'store'])
         ->middleware('throttle:10,1')
         ->name('invitations.store');
+
+    // Notifications...
+    Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/read', [NotificationReadController::class, 'store'])->name('notifications.read.store');
+    Route::patch('notifications/{notification}', [NotificationController::class, 'update'])->name('notifications.update');
 });
 
 Route::middleware('auth')->group(function (): void {
@@ -96,6 +104,10 @@ Route::middleware(['auth', 'verified'])->group(function (): void {
     Route::put('settings/password', [UserPasswordController::class, 'update'])
         ->middleware('throttle:6,1')
         ->name('password.update');
+
+    // Notification Preferences...
+    Route::get('settings/notifications', [UserNotificationPreferenceController::class, 'edit'])->name('notification-preferences.edit');
+    Route::put('settings/notifications', [UserNotificationPreferenceController::class, 'update'])->name('notification-preferences.update');
 
     // Appearance...
     Route::get('settings/appearance', fn () => Inertia::render('appearance/Update'))->name('appearance.edit');

@@ -8,6 +8,7 @@ use App\Enums\PollStatus;
 use App\Enums\QuestionKind;
 use App\Enums\QuestionStatus;
 use App\Enums\SubmissionState;
+use App\Http\Resources\NotificationResource;
 use App\Models\AnalysisNote;
 use App\Models\Poll;
 use App\Models\Submission;
@@ -15,6 +16,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Inertia\Middleware;
 
 final class HandleInertiaRequests extends Middleware
@@ -58,6 +60,10 @@ final class HandleInertiaRequests extends Middleware
                 ->where('question_kind', QuestionKind::Factual)
                 ->where('status', QuestionStatus::Open)
                 ->count() : 0,
+            'unreadNotificationsCount' => $user instanceof User ? fn (): int => $user->unreadNotifications()->count() : 0,
+            'latestNotifications' => Inertia::optional(fn (): array => $user instanceof User
+                ? NotificationResource::collection($user->notifications()->limit(8)->get())->resolve($request)
+                : []),
             'adminUrl' => $user instanceof User && $user->is_admin ? url('/admin') : null,
             'recentSubmissions' => $user instanceof User ? fn (): array => $this->recentSubmissions($user) : [],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
